@@ -19,6 +19,7 @@ app.use(morgan('dev'))
 app.use(cookieParser())
 
 app.use('/user', routes.user)
+app.use('/category', routes.category)
 
 connectDB()
 

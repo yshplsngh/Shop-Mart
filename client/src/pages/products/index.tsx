@@ -52,7 +52,11 @@ const Products = () => {
             <ProductCard />
           </div>
           <div className='mt-16 flex justify-center'>
-            <Pagination />
+            <Pagination
+              currentPage={0}
+              totalPage={0}
+              handleChangePage={(type: string) => {}}
+            />
           </div>
         </div>
       </div>

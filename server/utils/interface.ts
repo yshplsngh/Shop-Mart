@@ -23,3 +23,14 @@ export interface IUser extends IGeneralField {
   isValidEmail: number
   isValidPhone: number
 }
+
+export interface IReqUser extends Request {
+  user?: IUser
+}
+
+export interface ICategory extends IGeneralField {
+  name: string
+  availableSizes: string[]
+  availableSizeParameters: string[]
+  sizeChart: object[]
+}

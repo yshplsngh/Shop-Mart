@@ -1,7 +1,9 @@
 import user from './user.route'
+import category from './category.route'
 
 const routes = {
-  user
+  user,
+  category
 }
 
 export default routes

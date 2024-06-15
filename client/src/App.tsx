@@ -11,6 +11,7 @@ import SignUp from './pages/SignUp'
 import ProductDiscount from './pages/admin/ProductDiscount'
 import Alert from './components/general/Alert'
 import useStore from './store/store'
+import Dashboard from './pages/admin/Dashboard'
 
 const App = () => {
   const { refreshToken } = useStore()
@@ -28,6 +29,7 @@ const App = () => {
           <Route path='/register' element={<SignUp />} />
           <Route path='/products' element={<Products />} />
           <Route path='/cart' element={<Cart />} />
+          <Route path='/admin' element={<Dashboard />} />
           <Route path='/admin/product' element={<Product />} />
           <Route path='/admin/category' element={<Category />} />
           <Route path='/admin/product-discount' element={<ProductDiscount />} />

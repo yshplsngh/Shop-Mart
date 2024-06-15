@@ -7,6 +7,7 @@ export type FormSubmitted = FormEvent<HTMLFormElement>
 export interface GlobalStoreState {
   alertState: IAlertState
   userState: IUserState
+  categoryState: ICategoryState
 }
 
 export interface IGeneralField {
@@ -39,4 +40,19 @@ export interface IUser {
 export interface ILoginResponse {
   user: IUser
   accessToken: string
+}
+
+export interface ICategory {
+  name: string
+  availableSizes: string[]
+  availableSizeParameters: string[]
+  sizeChart: object[]
+  createdAt: string
+}
+
+export interface ICategoryState {
+  data: ICategory[]
+  totalPage: number
+  totalData: number
+  loading: boolean
 }

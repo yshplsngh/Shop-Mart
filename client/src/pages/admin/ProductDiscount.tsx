@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { LuPlus } from "react-icons/lu"
+import { useNavigate } from 'react-router-dom'
 import AdminLayout from "../../components/template/AdminLayout"
 import { AiOutlineSearch } from "react-icons/ai"
 import { FaTrashAlt } from 'react-icons/fa'
 import { MdEdit } from 'react-icons/md'
 import Pagination from '../../components/general/Pagination'
 import UpsertProductDiscount from '../../components/modal/ProductDiscountManagement/UpsertProductDiscount'
+import useStore from './../../store/store'
 
 const ProductDiscount = () => {
   const [keyword, setKeyword] = useState('')
@@ -13,6 +15,10 @@ const ProductDiscount = () => {
   const [openUpsertProductDiscountModal, setOpenUpsertProductDiscountModal] = useState(false)
 
   const upsertProductDiscountModalRef = useRef() as React.MutableRefObject<HTMLDivElement>
+
+  const navigate = useNavigate()
+
+  const { userState } = useStore()
 
   useEffect(() => {
     const checkIfClickedOutside = (e: MouseEvent) => {
@@ -24,6 +30,18 @@ const ProductDiscount = () => {
     document.addEventListener('mousedown', checkIfClickedOutside)
     return () => document.removeEventListener('mousedown', checkIfClickedOutside)
   }, [openUpsertProductDiscountModal])
+
+  useEffect(() => {
+    if (!userState.loading) {
+      if (userState.data.accessToken) {
+        if (userState.data.user?.role !== 'admin') {
+          navigate('/')
+        }
+      } else {
+        navigate('/login')
+      }
+    }
+  }, [userState.data, userState.loading, navigate])
 
   return (
     <>
@@ -84,7 +102,11 @@ const ProductDiscount = () => {
               </table>
             </div>
             <div className='mt-12 flex justify-center'>
-              <Pagination />
+              <Pagination
+                currentPage={0}
+                totalPage={0}
+                handleChangePage={(type: string) => {}}
+              />
             </div>
           </div>
         </div>

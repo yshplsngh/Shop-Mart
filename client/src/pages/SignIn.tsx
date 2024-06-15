@@ -69,7 +69,7 @@ const SignIn = () => {
           <form onSubmit={handleSubmit} className='mt-9'>
             <div className='w-full rounded-full border border-gray-400 relative px-5 py-2'>
               <input type='text' value={email} onChange={e => setEmail(e.target.value)} className='outline-none w-full text-sm ' />
-              <p className={`absolute top-1/2 -translate-y-1/2 left-5 text-sm text-gray-300 ${email ? 'hidden' : 'block'}`}>Email address</p>
+              <p className={`absolute top-1/2 -translate-y-1/2 left-5 text-sm pointer-events-none text-gray-300 ${email ? 'hidden' : 'block'}`}>Email address</p>
             </div>
             <div className='w-full rounded-full border border-gray-400 relative px-5 py-2 mt-6'>
               <input type={`${showPassword ? 'text' : 'password'}`} value={password} onChange={e => setPassword(e.target.value)} className='outline-none w-full text-sm pr-8' />
