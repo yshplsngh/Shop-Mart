@@ -4,9 +4,14 @@ import categoryCtrl from '../controllers/categoryCtrl'
 
 const router = express.Router()
 
-router.route('/').post(isAuthenticated, authorizeRoles('admin'), categoryCtrl.create)
-router.route('/').get(isAuthenticated, authorizeRoles('admin'), categoryCtrl.read)
-router.route('/:id').patch(isAuthenticated, authorizeRoles('admin'), categoryCtrl.update)
-router.route('/:id').delete(isAuthenticated, authorizeRoles('admin'), categoryCtrl.delete)
+router.route('/')
+  .get(isAuthenticated, authorizeRoles('admin'), categoryCtrl.read)
+  .post(isAuthenticated, authorizeRoles('admin'), categoryCtrl.create)
+
+router.route('/search').get(isAuthenticated, authorizeRoles('admin'), categoryCtrl.search)
+
+router.route('/:id')
+  .patch(isAuthenticated, authorizeRoles('admin'), categoryCtrl.update)
+  .delete(isAuthenticated, authorizeRoles('admin'), categoryCtrl.delete)
 
 export default router

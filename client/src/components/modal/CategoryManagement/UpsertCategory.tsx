@@ -1,15 +1,18 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { AiOutlineClose } from 'react-icons/ai'
-import { FormChanged, FormSubmitted } from '../../../utils/interface'
+import { FormChanged, FormSubmitted, ICategory } from '../../../utils/interface'
 import useStore from './../../../store/store'
 
 interface IProps {
   openUpsertCategoryModal: boolean
   setOpenUpsertCategoryModal: React.Dispatch<React.SetStateAction<boolean>>
   upsertCategoryModalRef: React.MutableRefObject<HTMLDivElement>
+  selectedCategory: Partial<ICategory>
+  setSelectedCategory: React.Dispatch<React.SetStateAction<Partial<ICategory>>>
 }
 
-const UpsertCategory: React.FC<IProps> = ({ openUpsertCategoryModal, setOpenUpsertCategoryModal, upsertCategoryModalRef }) => {
+const UpsertCategory: React.FC<IProps> = ({ openUpsertCategoryModal, setOpenUpsertCategoryModal, upsertCategoryModalRef, selectedCategory, setSelectedCategory }) => {
   const [categoryData, setCategoryData] = useState({
     name: '',
     availableSize: [''],
@@ -17,11 +20,18 @@ const UpsertCategory: React.FC<IProps> = ({ openUpsertCategoryModal, setOpenUpse
   })
   const [loading, setLoading] = useState(false)
 
-  const { createCategory, userState } = useStore()
+  const navigate = useNavigate()
+
+  const { createCategory, updateCategory, userState } = useStore()
 
   const handleChange = (e: FormChanged) => {
     const { name, value } = e.target
     setCategoryData({ ...categoryData, [name]: value })
+  }
+
+  const handleClickClose = () => {
+    setOpenUpsertCategoryModal(false)
+    setSelectedCategory({})
   }
 
   const handleAddNewAvailableSize = () => {
@@ -59,26 +69,55 @@ const UpsertCategory: React.FC<IProps> = ({ openUpsertCategoryModal, setOpenUpse
   const handleSubmit = async(e: FormSubmitted) => {
     e.preventDefault()
     setLoading(true)
-    await createCategory({
-      name: categoryData.name,
-      availableSizes: categoryData.availableSize,
-      availableSizeParameters: categoryData.sizeParameter
-    }, userState.data.accessToken!)
-    setOpenUpsertCategoryModal(false)
-    setCategoryData({
-      name: '',
-      availableSize: [''],
-      sizeParameter: ['']
-    })
+
+    if (Object.keys(selectedCategory).length > 0) {
+      await updateCategory({
+        ...selectedCategory,
+        name: categoryData.name,
+        availableSizes: categoryData.availableSize,
+        availableSizeParameters: categoryData.sizeParameter
+      }, selectedCategory._id!, userState.data.accessToken!)
+      setOpenUpsertCategoryModal(false)
+    } else {
+      await createCategory({
+        name: categoryData.name,
+        availableSizes: categoryData.availableSize,
+        availableSizeParameters: categoryData.sizeParameter
+      }, userState.data.accessToken!)
+      setOpenUpsertCategoryModal(false)
+      setCategoryData({
+        name: '',
+        availableSize: [''],
+        sizeParameter: ['']
+      })
+      navigate('/admin/category')
+    }
+    
     setLoading(false)
   }
+
+  useEffect(() => {
+    if (Object.keys(selectedCategory).length > 0) {
+      setCategoryData({
+        name: selectedCategory.name as string,
+        availableSize: selectedCategory.availableSizes as string[],
+        sizeParameter: selectedCategory.availableSizeParameters as string[]
+      })
+    } else {
+      setCategoryData({
+        name: '',
+        availableSize: [''],
+        sizeParameter: ['']
+      })
+    }
+  }, [selectedCategory])
 
   return (
     <div className={`${openUpsertCategoryModal ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} fixed top-0 left-0 bottom-0 right-0 bg-[rgba(0,0,0,.6)] flex items-center justify-center transition-opacity`}>
       <div ref={upsertCategoryModalRef} className={`w-1/2 flex flex-col max-h-[90%] bg-white rounded-lg ${openUpsertCategoryModal ? 'translate-y-0' : '-translate-y-10'} transition-transform`}>
         <div className='flex items-center justify-between px-6 py-3 border-b border-gray-300 bg-gray-900 text-white rounded-t-lg'>
-          <p className='font-semibold'>Create Product Category</p>
-          <AiOutlineClose onClick={() => setOpenUpsertCategoryModal(false)} className='cursor-pointer' />
+          <p className='font-semibold'>{Object.keys(selectedCategory).length > 0 ? 'Update' : 'Create'} Product Category</p>
+          <AiOutlineClose onClick={handleClickClose} className='cursor-pointer' />
         </div>
         <form onSubmit={handleSubmit} className='px-6 py-5 hide-scrollbar overflow-auto flex-1'>
           <div className='mb-6'>
@@ -118,7 +157,7 @@ const UpsertCategory: React.FC<IProps> = ({ openUpsertCategoryModal, setOpenUpse
               {
                 loading
                 ? 'Loading ...'
-                : 'Save'
+                : Object.keys(selectedCategory).length > 0 ? 'Save Changes' : 'Save'
               }
             </button>
           </div>

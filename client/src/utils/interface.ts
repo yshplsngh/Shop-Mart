@@ -42,12 +42,11 @@ export interface ILoginResponse {
   accessToken: string
 }
 
-export interface ICategory {
+export interface ICategory extends IGeneralField {
   name: string
   availableSizes: string[]
   availableSizeParameters: string[]
   sizeChart: object[]
-  createdAt: string
 }
 
 export interface ICategoryState {

@@ -59,7 +59,7 @@ const categoryCtrl = {
       let totalPage = 0
 
       if (category.length === 0) {
-        totalPage = 0
+        totalPage = 1
       } else {
         if (categoryCount % limit === 0) {
           totalPage = categoryCount / limit
@@ -84,8 +84,8 @@ const categoryCtrl = {
       if (!category)
         return res.status(404).json({ msg: `Category with ID ${id} not found.` })
 
-      const { name, availableSizes, availableSizeParameters, sizeChart } = req.body
-      if (!name || availableSizes.length < 1 || availableSizeParameters.length < 1 || sizeChart.length < 1 || availableSizes.includes('') || availableSizeParameters.includes(''))
+      const { name, availableSizes, availableSizeParameters } = req.body
+      if (!name || availableSizes.length < 1 || availableSizeParameters.length < 1 || availableSizes.includes('') || availableSizeParameters.includes(''))
         return res.status(400).json({ msg: 'Please provide required field to update category.' })
 
       const isCategoryNameAvailable = await Category.find({ name, _id: { $ne: id } })
@@ -95,30 +95,29 @@ const categoryCtrl = {
       const uniqueAvailableSizes = getUniqueValues(availableSizes)
       const uniqueAvailableSizeParameters = getUniqueValues(availableSizeParameters)
 
-      for (const chart of sizeChart) {
-        let sizeChartKey = Object.keys(chart)
-        sizeChartKey = sizeChartKey.filter(item => item !== 'size')
+      // for (const chart of sizeChart) {
+      //   let sizeChartKey = Object.keys(chart)
+      //   sizeChartKey = sizeChartKey.filter(item => item !== 'size')
 
-        if (!checkArrayEquality(sizeChartKey, uniqueAvailableSizeParameters))
-          return res.status(400).json({ msg: `Please provide correct size parameter for ${category.name} category.` })
-      }
+      //   if (!checkArrayEquality(sizeChartKey, uniqueAvailableSizeParameters))
+      //     return res.status(400).json({ msg: `Please provide correct size parameter for ${category.name} category.` })
+      // }
 
-      const providedSizes = []
-      for (const chart of sizeChart) {
-        if (!Object.keys(chart).includes('size'))
-          return res.status(400).json({ msg: 'Provided object key is not valid.' })
+      // const providedSizes = []
+      // for (const chart of sizeChart) {
+      //   if (!Object.keys(chart).includes('size'))
+      //     return res.status(400).json({ msg: 'Provided object key is not valid.' })
 
-        providedSizes.push(chart.size)
-      }
+      //   providedSizes.push(chart.size)
+      // }
 
-      if (!checkArrayEquality(providedSizes, uniqueAvailableSizes))
-        return res.status(400).json({ msg: `Please provide correct size for ${category.name} category.` })
+      // if (!checkArrayEquality(providedSizes, uniqueAvailableSizes))
+      //   return res.status(400).json({ msg: `Please provide correct size for ${category.name} category.` })
       
       await Category.findByIdAndUpdate(id, {
         name,
         availableSizes: uniqueAvailableSizes,
-        availableSizeParameters: uniqueAvailableSizeParameters,
-        sizeChart
+        availableSizeParameters: uniqueAvailableSizeParameters
       })
 
       return res.status(200).json({
@@ -127,8 +126,7 @@ const categoryCtrl = {
           ...category._doc,
           name,
           availableSizes: uniqueAvailableSizes,
-          availableSizeParameters: uniqueAvailableSizeParameters,
-          sizeChart
+          availableSizeParameters: uniqueAvailableSizeParameters
         }
       })
     } catch (err: any) {
@@ -148,6 +146,16 @@ const categoryCtrl = {
 
       await Category.findByIdAndDelete(id)
       return res.status(200).json({ msg: `Category with ID ${id} has been deleted successfully.` })
+    } catch (err: any) {
+      return res.status(500).json({ msg: err.message })
+    }
+  },
+  search: async(req: Request, res: Response) => {
+    try {
+      const categoryName = req.query.name as string
+      const regex = new RegExp(categoryName, 'i')
+      const category = await Category.find({ name: { $regex: regex } }).sort('-createdAt')
+      return res.status(200).json({ category })
     } catch (err: any) {
       return res.status(500).json({ msg: err.message })
     }

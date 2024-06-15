@@ -13,10 +13,12 @@ import Delete from '../../components/modal/Delete'
 import useStore from './../../store/store'
 import { formatDate } from '../../utils/date'
 import Loader from '../../components/general/Loader'
+import { ICategory } from '../../utils/interface'
 
 const Category = () => {
   const [openUpsertCategoryModal, setOpenUpsertCategoryModal] = useState(false)
   const [openSetDefaultSizeModal, setOpenSetDefaultSizeModal] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState<Partial<ICategory>>({})
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [keyword, setKeyword] = useState('')
   
@@ -28,9 +30,9 @@ const Category = () => {
   const { search } = useLocation()
   const searchParams = new URLSearchParams(search)
   const page = Number(searchParams.get('page')) || 1
-  const limit = Number(searchParams.get('limit')) || 9
+  const limit = 9
 
-  const { userState, categoryState, readCategory } = useStore()
+  const { userState, categoryState, readCategory, deleteCategory } = useStore()
 
   const handleChangePage = (type: string) => {
     if (type === 'previous') {
@@ -48,10 +50,29 @@ const Category = () => {
     }
   }
 
+  const handleClickEdit = (item: ICategory) => {
+    setSelectedCategory(item)
+    setOpenUpsertCategoryModal(true)
+  }
+
+  const handleClickDelete = (item: ICategory) => {
+    setSelectedCategory(item)
+    setOpenDeleteModal(true)
+  }
+
+  const handleDelete = () => {
+    if (categoryState.data.length === 1 && page !== 1) {
+      navigate(`/admin/category?page=${page - 1}`)
+    }
+    deleteCategory(selectedCategory._id!, page, userState.data.accessToken!)
+    setOpenDeleteModal(false)
+  }
+
   useEffect(() => {
     const checkIfClickedOutside = (e: MouseEvent) => {
       if (openUpsertCategoryModal && upsertCategoryModalRef.current && !upsertCategoryModalRef.current.contains(e.target as Node)) {
         setOpenUpsertCategoryModal(false)
+        setSelectedCategory({})
       }
     }
 
@@ -74,6 +95,7 @@ const Category = () => {
     const checkIfClickedOutside = (e: MouseEvent) => {
       if (openDeleteModal && deleteModalRef.current && !deleteModalRef.current.contains(e.target as Node)) {
         setOpenDeleteModal(false)
+        setSelectedCategory({})
       }
     }
 
@@ -141,21 +163,31 @@ const Category = () => {
                           <th className='pb-5'>Action</th>
                         </tr>
                       </thead>
-                      <tbody className='text-sm'>
-                        {
-                          categoryState.data.map(item => (
-                            <tr className='border-b border-gray-200'>
-                              <td className='py-4'>{item.name}</td>
-                              <td>{formatDate(item.createdAt)}</td>
-                              <td className='flex items-center gap-5 py-4'>
-                                <MdEdit className='text-blue-500 text-xl cursor-pointer' />
-                                <FaTrashAlt onClick={() => setOpenDeleteModal(true)} className='text-red-500 text-lg cursor-pointer' />
-                                <VscTextSize onClick={() => setOpenSetDefaultSizeModal(true)} className='text-xl text-orange-500 cursor-pointer' />
-                              </td>
-                            </tr>
-                          ))
-                        }
-                      </tbody>
+                      {
+                        categoryState.data.length === 0
+                        ? (
+                          <tr className='bg-red-500'>
+                            <td colSpan={3} className='rounded-md text-center text-white font-bold py-3 text-sm'>No records found</td>
+                          </tr>
+                        )
+                        : (
+                          <tbody className='text-sm'>
+                            {
+                              categoryState.data.map(item => (
+                                <tr key={item._id} className='border-b border-gray-200'>
+                                  <td className='py-4'>{item.name}</td>
+                                  <td>{formatDate(item.createdAt)}</td>
+                                  <td className='flex items-center gap-5 py-4'>
+                                    <MdEdit onClick={() => handleClickEdit(item)} className='text-blue-500 text-xl cursor-pointer' />
+                                    <FaTrashAlt onClick={() => handleClickDelete(item)} className='text-red-500 text-lg cursor-pointer' />
+                                    <VscTextSize onClick={() => setOpenSetDefaultSizeModal(true)} className='text-xl text-orange-500 cursor-pointer' />
+                                  </td>
+                                </tr>
+                              ))
+                            }
+                          </tbody>
+                        )
+                      }
                     </table>
                   </div>
                   {
@@ -179,6 +211,8 @@ const Category = () => {
         openUpsertCategoryModal={openUpsertCategoryModal}
         setOpenUpsertCategoryModal={setOpenUpsertCategoryModal}
         upsertCategoryModalRef={upsertCategoryModalRef}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
       />
 
       <SetDefaultSize
@@ -191,6 +225,10 @@ const Category = () => {
         openDeleteModal={openDeleteModal}
         setOpenDeleteModal={setOpenDeleteModal}
         deleteModalRef={deleteModalRef}
+        handleDelete={handleDelete}
+        name={selectedCategory.name || '' as string}
+        entity='category'
+        removeSelectedItem={() => setSelectedCategory({})}
       />
     </>
   )

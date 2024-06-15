@@ -15,7 +15,7 @@ interface IProps {
 const AdminLayout: React.FC<IProps> = ({ title, children }) => {
   const { pathname } = useLocation()
 
-  const { logout } = useStore()
+  const { userState, logout } = useStore()
 
   return (
     <>
@@ -24,8 +24,10 @@ const AdminLayout: React.FC<IProps> = ({ title, children }) => {
         <div className='flex flex-col flex-1 py-10'>
           <div className='flex-1'>
             <div className='flex flex-col items-center'>
-              <div className='w-20 h-20 rounded-full bg-gray-200'></div>
-              <p className='font-semibold mt-4'>Lorem Ipsum</p>
+              <div className='w-20 h-20 rounded-full bg-black text-3xl flex items-center justify-center'>
+                <p className='text-white font-bold'>{`${userState.data.user?.name.split(' ')[0][0]} ${userState.data.user?.name.split(' ')[userState.data.user?.name.split(' ').length - 1][0]}`}</p>
+              </div>
+              <p className='font-semibold mt-4'>{userState.data.user?.name}</p>
               <p className='text-xs text-gray-400 mt-2'>Admin</p>
             </div>
             <div className='mt-8'>
