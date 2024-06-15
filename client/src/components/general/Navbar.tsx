@@ -4,13 +4,24 @@ import { AiOutlineClose, AiOutlineSearch } from 'react-icons/ai'
 import { FaBagShopping, FaUser } from 'react-icons/fa6'
 import { RxHamburgerMenu } from 'react-icons/rx'
 import { APP_NAME } from './../../utils/constant'
+import useStore from './../../store/store'
 import Logo from './Logo'
+import { MdLogout } from 'react-icons/md'
 
 const Navbar = () => {
   const [onScroll, setOnScroll] = useState(false)
   const [openSidebar, setOpenSidebar] = useState(false)
+  const [openProfileDropdown, setOpenProfileDropdown] = useState(false)
 
   const sidebarRef = useRef() as React.MutableRefObject<HTMLDivElement>
+  const profileDropdownRef = useRef() as React.MutableRefObject<HTMLDivElement>
+  
+  const { userState, logout } = useStore()
+
+  const handleLogout = async() => {
+    await logout()
+    setOpenProfileDropdown(false)
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,6 +47,17 @@ const Navbar = () => {
     document.addEventListener('mousedown', checkIfClickedOutside)
     return () => document.removeEventListener('mousedown', checkIfClickedOutside)
   }, [openSidebar])
+
+  useEffect(() => {
+    const checkIfClickedOutside = (e: MouseEvent) => {
+      if (openProfileDropdown && profileDropdownRef.current && !profileDropdownRef.current.contains(e.target as Node)) {
+        setOpenProfileDropdown(false)
+      }
+    }
+
+    document.addEventListener('mousedown', checkIfClickedOutside)
+    return () => document.removeEventListener('mousedown', checkIfClickedOutside)
+  }, [openProfileDropdown])
 
   return (
     <>
@@ -76,12 +98,41 @@ const Navbar = () => {
               </div>
               <p className='md:block hidden'>Cart (0)</p>
             </Link>
-            <Link to='/login' className='flex items-center gap-3'>
-              <div className='rounded-full p-2 bg-gray-800 text-white flex items-center justify-center'>
-                <FaUser className='text-xs' />
-              </div>
-              <p className='md:block hidden'>Sign In</p>
-            </Link>
+            {
+              !userState.data.accessToken
+              ? (
+                <Link to='/login' className='flex items-center gap-3'>
+                  <div className='rounded-full p-2 bg-gray-800 text-white flex items-center justify-center'>
+                    <FaUser className='text-xs' />
+                  </div>
+                  <p className='md:block hidden'>Sign In</p>
+                </Link>
+              )
+              : (
+                <div ref={profileDropdownRef} className='relative'>
+                  <div onClick={() => setOpenProfileDropdown(!openProfileDropdown)} className='flex items-center gap-3 cursor-pointer'>
+                    {
+                      !userState.data.user?.avatar
+                      ? (
+                        <div className='w-8 h-8 rounded-full bg-black text-sm flex items-center justify-center'>
+                          <p className='text-white font-bold'>{`${userState.data.user?.name.split(' ')[0][0]} ${userState.data.user?.name.split(' ')[userState.data.user?.name.split(' ').length - 1][0]}`}</p>
+                        </div>
+                      )
+                      : (
+                        <div className='w-8 h-8 rounded-full bg-black'></div>
+                      )
+                    }
+                    <p>{userState.data.user?.name}</p>
+                  </div>
+                  <div className={`absolute top-full mt-3 border border-gray-300 rounded-md w-[180px] right-0 bg-white ${openProfileDropdown ? 'scale-y-100' : 'scale-y-0'} transition origin-top`}>
+                    <div onClick={handleLogout} className='flex items-center gap-3 py-3 px-4 hover:bg-gray-100 transition cursor-pointer rounded-md'>
+                      <MdLogout />
+                      <p>Logout</p>
+                    </div>
+                  </div>
+                </div>
+              )
+            }
           </div>
         </div>
       </div>

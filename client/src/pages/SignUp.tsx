@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from "react-router-dom"
 import Logo from "../components/general/Logo"
 import HeadInfo from "../utils/HeadInfo"
@@ -19,7 +19,7 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false)
 
-  const { initiate } = useStore()
+  const { initiate, userState } = useStore()
 
   const navigate = useNavigate()
 
@@ -29,21 +29,26 @@ const SignUp = () => {
     setLoading(true)
 
     if (!name || !email || !password || !passwordConfirmation) {
-      initiate('Please provide required field for registration purpose.', 'error')
+      setLoading(false)
+      return initiate('Please provide required field for registration purpose.', 'error')
     }
 
     if (!validEmail(email)) {
-      initiate('Please provide valid email for register purpose.', 'error')
+      setLoading(false)
+      return initiate('Please provide valid email address for register purpose.', 'error')
     }
 
     if (password.length < 8) {
-      initiate('Password should be at least 8 characters.', 'error')
+      setLoading(false)
+      return initiate('Password should be at least 8 characters.', 'error')
     } else if (!validPassword(password)) {
-      initiate('Password should contains lowercase, uppercase, number, and symbol.', 'error')
+      setLoading(false)
+      return initiate('Password should contains lowercase, uppercase, number, and symbol.', 'error')
     }
 
     if (password !== passwordConfirmation) {
-      initiate('Password confirmation should be matched.', 'error')
+      setLoading(false)
+      return initiate('Password confirmation should be matched.', 'error')
     }
 
     try {
@@ -56,6 +61,11 @@ const SignUp = () => {
 
     setLoading(false)
   }
+
+  useEffect(() => {
+    if (userState.data.accessToken)
+      navigate('/')
+  }, [navigate, userState.data.accessToken])
 
   return (
     <>

@@ -1,19 +1,58 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { APP_NAME } from './../utils/constant'
 import { FormSubmitted } from './../utils/interface'
 import HeadInfo from './../utils/HeadInfo'
 import Logo from './../components/general/Logo'
+import useStore from './../store/store'
+import { validEmail } from '../utils/validator'
 
 const SignIn = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  
   const [showPassword, setShowPassword] = useState(false)
 
-  const handleSubmit = (e: FormSubmitted) => {
+  const [loading, setLoading] = useState(false)
+
+  const { initiate, login, userState } = useStore()
+
+  const navigate = useNavigate()
+
+  const handleSubmit = async(e: FormSubmitted) => {
     e.preventDefault()
+
+    setLoading(true)
+
+    if (!email || !password) {
+      setLoading(false)
+      return initiate('Please provide required field for registration purpose.', 'error')
+    }
+
+    if (!validEmail(email)) {
+      setLoading(false)
+      return initiate('Please provide valid email address for login purpose', 'error')
+    }
+
+    try {
+      await login({ email, password })
+    } catch (err: any) {
+      initiate(err.response.data.msg, 'error')
+    }
+
+    setLoading(false)
   }
+
+  useEffect(() => {
+    if (userState.data.accessToken) {
+      if (userState.data.user?.role === 'customer') {
+        navigate('/')
+      } else if (userState.data.user?.role === 'admin') {
+        navigate('/admin')
+      }
+    }
+  }, [navigate, userState.data])
 
   return (
     <>
@@ -41,7 +80,13 @@ const SignIn = () => {
                 : <AiFillEye onClick={() => setShowPassword(true)} className='absolute top-1/2 -translate-y-1/2 right-5 first-letter text-gray-500 cursor-pointer' />
               }
             </div>
-            <button disabled={!email || !password} className={`${!email || !password ? 'bg-gray-300 hover:bg-gray-300' : 'bg-black hover:bg-gray-800'} outline-none transition-all text-white w-full py-3 text-sm rounded-full mt-8`}>Sign In</button>
+            <button disabled={loading || !email || !password} className={`${loading || !email || !password ? 'bg-gray-300 hover:bg-gray-300 cursor-not-allowed' : 'bg-black hover:bg-gray-800 cursor-pointer'} outline-none transition-all text-white w-full py-3 text-sm rounded-full mt-8`}>
+              {
+                loading
+                ? 'Loading ...'
+                : 'Sign In'
+              }
+            </button>
           </form>
           <p className='text-xs font-semibold text-center mt-5 text-gray-400'>Don't have an account? <Link to='/register' className='text-black'>Register</Link></p>
           <div className='flex items-center w-full gap-3 mt-8'>

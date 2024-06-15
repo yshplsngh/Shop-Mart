@@ -15,7 +15,7 @@ const Alert = () => {
             ? <IoIosCheckmarkCircle className='text-9xl text-green-600' />
             : ''
         }
-        <p className='mt-4'>{alertState.type === 'error' ? 'Operation Failed' : alertState.type === 'success' ? 'Operation Success' : ''}</p>
+        <p className='mt-4 font-bold'>{alertState.type === 'error' ? 'Operation Failed' : alertState.type === 'success' ? 'Operation Success' : ''}</p>
         <p className='mt-2 text-sm text-gray-500 text-center'>{alertState.message}</p>
         <div className='mt-8'>
           <button onClick={clear} className={`font-bold text-white px-6 py-3 rounded-md text-sm ${alertState.type === 'success' ? 'bg-green-500 hover:bg-green-600' : alertState.type === 'error' ? 'bg-red-500 hover:bg-red-600' : ''} transition`}>OK, I got it</button>

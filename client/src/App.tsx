@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import SignIn from './pages/SignIn'
@@ -9,8 +10,15 @@ import Category from './pages/admin/Category'
 import SignUp from './pages/SignUp'
 import ProductDiscount from './pages/admin/ProductDiscount'
 import Alert from './components/general/Alert'
+import useStore from './store/store'
 
 const App = () => {
+  const { refreshToken } = useStore()
+
+  useEffect(() => {
+    refreshToken()
+  }, [refreshToken])
+
   return (
     <>
       <Router>
