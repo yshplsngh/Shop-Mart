@@ -7,20 +7,19 @@ import Cart from './pages/Cart'
 import Product from './pages/admin/Product'
 import Category from './pages/admin/Category'
 
-
 const App = () => {
   return (
-      <Router>
-          <Routes>
-              <Route path='/' element={<Home />} />
-              <Route path='/login' element={<SignIn />} />
-              <Route path='/products' element={<Products />} />
-              <Route path='/cart' element={<Cart />} />
-              <Route path='/admin/product' element={<Product />} />
-              <Route path='/admin/category' element={<Category />} />
-              <Route path='/products/:slug' element={<Detail />} />
-          </Routes>
-      </Router>
+    <Router>
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/login' element={<SignIn />} />
+        <Route path='/products' element={<Products />} />
+        <Route path='/cart' element={<Cart />} />
+        <Route path='/admin/product' element={<Product />} />
+        <Route path='/admin/category' element={<Category />} />
+        <Route path='/products/:slug' element={<Detail />} />
+      </Routes>
+    </Router>
   )
 }
 

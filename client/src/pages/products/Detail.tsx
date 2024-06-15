@@ -15,16 +15,14 @@ const Detail = () => {
         {/* header */}
         <div className='md:px-12 px-6 flex md:flex-row flex-col gap-8 md:items-center'>
           <div className='flex-1 h-[600px] rounded-md'>
-            <img style={{objectPosition: '50% 20%'}} src={`${process.env.PUBLIC_URL}/images/photos/login.jpg`}
-                 alt={`${APP_NAME} Product Name`} className='w-full h-full object-cover rounded-md'/>
+            <img style={{ objectPosition: '50% 20%' }} src={`${process.env.PUBLIC_URL}/images/photos/login.jpg`} alt={`${APP_NAME} Product Name`} className='w-full h-full object-cover rounded-md' />
           </div>
           <div className='flex-1'>
             <h1 className='font-medium text-4xl'>Blazer Long Sleeve</h1>
-            <p className='text-gray-400 text-sm mt-5'>Distinctive blazer piece, featuring a cropped sillhoutte for a
-              stylish and comfortable edge.</p>
+            <p className='text-gray-400 text-sm mt-5'>Distinctive blazer piece, featuring a cropped sillhoutte for a stylish and comfortable edge.</p>
             <div className='flex items-center gap-2 mt-5'>
               <div className='flex items-centar gap-2'>
-                <FaStar className='text-orange-400 text-lg'/>
+                <FaStar className='text-orange-400 text-lg' />
                 <p className='text-sm'>4/5</p>
               </div>
               <p className='text-gray-500 text-sm'>(120 Reviews)</p>
@@ -32,61 +30,47 @@ const Detail = () => {
             <div className='mt-8 flex items-center justify-between'>
               <p className='text-2xl font-medium'>IDR 300.000,00</p>
               <div className='flex gap-3'>
-                <div
-                    className='w-10 h-10 rounded-md bg-red-400 cursor-pointer hover:outline hover:outline-offset-2 hover:outline-black transition-[outline]'/>
-                <div
-                    className='w-10 h-10 rounded-md bg-red-400 cursor-pointer hover:outline hover:outline-offset-2 hover:outline-black transition-[outline]'/>
-                <div
-                    className='w-10 h-10 rounded-md bg-red-400 cursor-pointer hover:outline hover:outline-offset-2 hover:outline-black transition-[outline]'/>
+                <div className='w-10 h-10 rounded-md bg-red-400 cursor-pointer hover:outline hover:outline-offset-2 hover:outline-black transition-[outline]' />
+                <div className='w-10 h-10 rounded-md bg-red-400 cursor-pointer hover:outline hover:outline-offset-2 hover:outline-black transition-[outline]' />
+                <div className='w-10 h-10 rounded-md bg-red-400 cursor-pointer hover:outline hover:outline-offset-2 hover:outline-black transition-[outline]' />
               </div>
             </div>
             <div className='mt-10'>
               <p className='font-semibold'>Select Size:</p>
               <div className='mt-5 flex items-center gap-3 flex-wrap'>
-                <div
-                    className='py-2 px-5 bg-gray-100 rounded-md w-fit cursor-pointer hover:bg-black hover:text-white transition'>
+                <div className='py-2 px-5 bg-gray-100 rounded-md w-fit cursor-pointer hover:bg-black hover:text-white transition'>
                   <p className='text-sm'>X-Small</p>
                 </div>
-                <div
-                    className='py-2 px-5 bg-gray-100 rounded-md w-fit cursor-pointer hover:bg-black hover:text-white transition'>
+                <div className='py-2 px-5 bg-gray-100 rounded-md w-fit cursor-pointer hover:bg-black hover:text-white transition'>
                   <p className='text-sm'>Small</p>
                 </div>
-                <div
-                    className='py-2 px-5 bg-gray-100 rounded-md w-fit cursor-pointer hover:bg-black hover:text-white transition'>
+                <div className='py-2 px-5 bg-gray-100 rounded-md w-fit cursor-pointer hover:bg-black hover:text-white transition'>
                   <p className='text-sm'>Medium</p>
                 </div>
-                <div
-                    className='py-2 px-5 bg-gray-100 rounded-md w-fit cursor-pointer hover:bg-black hover:text-white transition'>
+                <div className='py-2 px-5 bg-gray-100 rounded-md w-fit cursor-pointer hover:bg-black hover:text-white transition'>
                   <p className='text-sm'>Large</p>
                 </div>
-                <div
-                    className='py-2 px-5 bg-gray-100 rounded-md w-fit cursor-pointer hover:bg-black hover:text-white transition'>
+                <div className='py-2 px-5 bg-gray-100 rounded-md w-fit cursor-pointer hover:bg-black hover:text-white transition'>
                   <p className='text-sm'>X-Large</p>
                 </div>
-                <div
-                    className='py-2 px-5 bg-gray-100 rounded-md w-fit cursor-pointer hover:bg-black hover:text-white transition'>
+                <div className='py-2 px-5 bg-gray-100 rounded-md w-fit cursor-pointer hover:bg-black hover:text-white transition'>
                   <p className='text-sm'>XX-Large</p>
                 </div>
               </div>
             </div>
-            <hr className='my-8'/>
+            <hr className='my-8' />
             <div className='flex gap-5'>
               <div className='flex items-center gap-5 bg-gray-100 rounded-md w-fit px-3 py-2'>
-                <LuMinus className='cursor-pointer'/>
+                <LuMinus className='cursor-pointer' />
                 <p className='px-3'>1</p>
-                <LuPlus className='cursor-pointer'/>
+                <LuPlus className='cursor-pointer' />
               </div>
-              <button className='bg-black hover:bg-gray-700 transition text-white text-sm flex-1 rounded-md'>Add to
-                Cart
-              </button>
+              <button className='bg-black hover:bg-gray-700 transition text-white text-sm flex-1 rounded-md'>Add to Cart</button>
             </div>
             <div className='mt-10'>
               <p className='font-semibold'>Description</p>
               <p className='text-sm mt-4 text-gray-400 leading-relaxed'>
-                Introducing our Blazer Long Sleeve, a versatile and stylish addition to your wardrobe that effortlessly
-                blends comfort with fashion. Crafted for everyday wear and special occasions, this jacket is designed to
-                offer exceptional quality and on-trend style. The high-quality denim ensures day-long comfort, making it
-                the perfect choice for a range of activities.
+                Introducing our Blazer Long Sleeve, a versatile and stylish addition to your wardrobe that effortlessly blends comfort with fashion. Crafted for everyday wear and special occasions, this jacket is designed to offer exceptional quality and on-trend style. The high-quality denim ensures day-long comfort, making it the perfect choice for a range of activities.
               </p>
             </div>
           </div>
