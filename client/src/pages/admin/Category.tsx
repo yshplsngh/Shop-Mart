@@ -8,14 +8,17 @@ import { FaTrashAlt } from 'react-icons/fa'
 import Pagination from '../../components/general/Pagination'
 import UpsertCategory from '../../components/modal/CategoryManagement/UpsertCategory'
 import SetDefaultSize from '../../components/modal/CategoryManagement/SetDefaultSize'
+import Delete from '../../components/modal/Delete'
 
 const Category = () => {
   const [openUpsertCategoryModal, setOpenUpsertCategoryModal] = useState(false)
   const [openSetDefaultSizeModal, setOpenSetDefaultSizeModal] = useState(false)
+  const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [keyword, setKeyword] = useState('')
   
   const upsertCategoryModalRef = useRef() as React.MutableRefObject<HTMLDivElement>
   const setDefaultSizeModalRef = useRef() as React.MutableRefObject<HTMLDivElement>
+  const deleteModalRef = useRef() as React.MutableRefObject<HTMLDivElement>
 
   useEffect(() => {
     const checkIfClickedOutside = (e: MouseEvent) => {
@@ -38,6 +41,17 @@ const Category = () => {
     document.addEventListener('mousedown', checkIfClickedOutside)
     return () => document.removeEventListener('mousedown', checkIfClickedOutside)
   }, [openSetDefaultSizeModal])
+
+  useEffect(() => {
+    const checkIfClickedOutside = (e: MouseEvent) => {
+      if (openDeleteModal && deleteModalRef.current && !deleteModalRef.current.contains(e.target as Node)) {
+        setOpenDeleteModal(false)
+      }
+    }
+
+    document.addEventListener('mousedown', checkIfClickedOutside)
+    return () => document.removeEventListener('mousedown', checkIfClickedOutside)
+  }, [openDeleteModal])
   
   return (
     <>
@@ -69,8 +83,8 @@ const Category = () => {
                 <thead className='text-sm text-gray-500 font-normal'>
                   <tr>
                     <th className='pb-5'>Category Name</th>
-                    <th>Created At</th>
-                    <th>Action</th>
+                    <th className='pb-5'>Created At</th>
+                    <th className='pb-5'>Action</th>
                   </tr>
                 </thead>
                 <tbody className='text-sm'>
@@ -79,7 +93,7 @@ const Category = () => {
                     <td>12 January 2024</td>
                     <td className='flex items-center gap-5 py-4'>
                       <MdEdit className='text-blue-500 text-xl cursor-pointer' />
-                      <FaTrashAlt className='text-red-500 text-lg cursor-pointer' />
+                      <FaTrashAlt onClick={() => setOpenDeleteModal(true)} className='text-red-500 text-lg cursor-pointer' />
                       <VscTextSize onClick={() => setOpenSetDefaultSizeModal(true)} className='text-xl text-orange-500 cursor-pointer' />
                     </td>
                   </tr>
@@ -103,6 +117,12 @@ const Category = () => {
         openSetDefaultSizeModal={openSetDefaultSizeModal}
         setOpenSetDefaultSizeModal={setOpenSetDefaultSizeModal}
         setDefaultSizeModalRef={setDefaultSizeModalRef}
+      />
+
+      <Delete
+        openDeleteModal={openDeleteModal}
+        setOpenDeleteModal={setOpenDeleteModal}
+        deleteModalRef={deleteModalRef}
       />
     </>
   )
