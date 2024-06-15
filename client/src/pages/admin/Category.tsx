@@ -6,13 +6,16 @@ import AdminLayout from './../../components/template/AdminLayout'
 import { MdEdit } from 'react-icons/md'
 import { FaTrashAlt } from 'react-icons/fa'
 import Pagination from '../../components/general/Pagination'
-import UpsertCategory from '../../components/modal/UpsertCategory'
+import UpsertCategory from '../../components/modal/CategoryManagement/UpsertCategory'
+import SetDefaultSize from '../../components/modal/CategoryManagement/SetDefaultSize'
 
 const Category = () => {
   const [openUpsertCategoryModal, setOpenUpsertCategoryModal] = useState(false)
+  const [openSetDefaultSizeModal, setOpenSetDefaultSizeModal] = useState(false)
   const [keyword, setKeyword] = useState('')
   
   const upsertCategoryModalRef = useRef() as React.MutableRefObject<HTMLDivElement>
+  const setDefaultSizeModalRef = useRef() as React.MutableRefObject<HTMLDivElement>
 
   useEffect(() => {
     const checkIfClickedOutside = (e: MouseEvent) => {
@@ -24,6 +27,17 @@ const Category = () => {
     document.addEventListener('mousedown', checkIfClickedOutside)
     return () => document.removeEventListener('mousedown', checkIfClickedOutside)
   }, [openUpsertCategoryModal])
+
+  useEffect(() => {
+    const checkIfClickedOutside = (e: MouseEvent) => {
+      if  (openSetDefaultSizeModal && setDefaultSizeModalRef.current && !setDefaultSizeModalRef.current.contains(e.target as Node)) {
+        setOpenSetDefaultSizeModal(false)
+      }
+    }
+
+    document.addEventListener('mousedown', checkIfClickedOutside)
+    return () => document.removeEventListener('mousedown', checkIfClickedOutside)
+  }, [openSetDefaultSizeModal])
   
   return (
     <>
@@ -66,7 +80,7 @@ const Category = () => {
                     <td className='flex items-center gap-5 py-4'>
                       <MdEdit className='text-blue-500 text-xl cursor-pointer' />
                       <FaTrashAlt className='text-red-500 text-lg cursor-pointer' />
-                      <VscTextSize className='text-xl text-orange-500 cursor-pointer' />
+                      <VscTextSize onClick={() => setOpenSetDefaultSizeModal(true)} className='text-xl text-orange-500 cursor-pointer' />
                     </td>
                   </tr>
                 </tbody>
@@ -83,6 +97,12 @@ const Category = () => {
         openUpsertCategoryModal={openUpsertCategoryModal}
         setOpenUpsertCategoryModal={setOpenUpsertCategoryModal}
         upsertCategoryModalRef={upsertCategoryModalRef}
+      />
+
+      <SetDefaultSize
+        openSetDefaultSizeModal={openSetDefaultSizeModal}
+        setOpenSetDefaultSizeModal={setOpenSetDefaultSizeModal}
+        setDefaultSizeModalRef={setDefaultSizeModalRef}
       />
     </>
   )

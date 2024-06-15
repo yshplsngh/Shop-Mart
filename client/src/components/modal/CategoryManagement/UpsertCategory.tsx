@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
-import { FormChanged } from '../../utils/interface'
+import { FormChanged } from '../../../utils/interface'
 
 interface IProps {
   openUpsertCategoryModal: boolean
