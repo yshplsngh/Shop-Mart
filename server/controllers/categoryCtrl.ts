@@ -31,28 +31,55 @@ const categoryCtrl = {
   },
   read: async(req: Request, res: Response) => {
     try {
+      const { search } = req.query
       const { skip, limit } = pagination(req)
+      let categoryAggregation
 
-      const categoryAggregation = await Category.aggregate([
-        {
-          $facet: {
-            data: [
-              { $sort: { createdAt: -1 } },
-              { $skip: skip },
-              { $limit: limit }
-            ],
-            count: [
-              { $count: 'count' }
-            ]
+      if (!search) {
+        categoryAggregation = await Category.aggregate([
+          {
+            $facet: {
+              data: [
+                { $sort: { createdAt: -1 } },
+                { $skip: skip },
+                { $limit: limit }
+              ],
+              count: [
+                { $count: 'count' }
+              ]
+            }
+          },
+          {
+            $project: {
+              count: { $arrayElemAt: ['$count.count', 0] },
+              data: 1
+            }
           }
-        },
-        {
-          $project: {
-            count: { $arrayElemAt: ['$count.count', 0] },
-            data: 1
+        ])
+      } else {
+        categoryAggregation = await Category.aggregate([
+          {
+            $facet: {
+              data: [
+                { $match: { name: { $regex: new RegExp(search as string, 'i') } } },
+                { $sort: { createdAt: -1 } },
+                { $skip: skip },
+                { $limit: limit }
+              ],
+              count: [
+                { $match: { name: { $regex: new RegExp(search as string, 'i') } } },
+                { $count: 'count' }
+              ]
+            }
+          },
+          {
+            $project: {
+              count: { $arrayElemAt: ['$count.count', 0] },
+              data: 1
+            }
           }
-        }
-      ])
+        ])
+      }
 
       const category = categoryAggregation[0].data
       const categoryCount = categoryAggregation[0].count || 0
@@ -146,16 +173,6 @@ const categoryCtrl = {
 
       await Category.findByIdAndDelete(id)
       return res.status(200).json({ msg: `Category with ID ${id} has been deleted successfully.` })
-    } catch (err: any) {
-      return res.status(500).json({ msg: err.message })
-    }
-  },
-  search: async(req: Request, res: Response) => {
-    try {
-      const categoryName = req.query.name as string
-      const regex = new RegExp(categoryName, 'i')
-      const category = await Category.find({ name: { $regex: regex } }).sort('-createdAt')
-      return res.status(200).json({ category })
     } catch (err: any) {
       return res.status(500).json({ msg: err.message })
     }

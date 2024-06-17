@@ -105,8 +105,8 @@ const Category = () => {
   
   useEffect(() => {
     if (userState.data.accessToken)
-      readCategory(userState.data.accessToken, page, limit)
-  }, [userState.data.accessToken, page, limit, readCategory])
+      readCategory(userState.data.accessToken, page, limit, keyword)
+  }, [userState.data.accessToken, page, limit, readCategory, keyword])
 
   useEffect(() => {
     if (!userState.loading) {

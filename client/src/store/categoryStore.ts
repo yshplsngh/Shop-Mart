@@ -37,13 +37,13 @@ const categoryStore = (set: any) => {
         }, false, 'create_category/error')
       }
     },
-    readCategory: async(token: string, page: number, limit: number) => {
+    readCategory: async(token: string, page: number, limit: number, search?: string) => {
       set((state: GlobalStoreState) => {
         state.categoryState.loading = true
       }, false, 'read_category/loading')
       
       try {
-        const res = await getDataAPI(`/category?page=${page}&limit=${limit}`, token)
+        const res = await getDataAPI(`/category?page=${page}&limit=${limit}&search=${search}`, token)
 
         set((state: GlobalStoreState) => {
           state.categoryState.data = res.data.category
