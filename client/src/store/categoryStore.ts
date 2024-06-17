@@ -78,6 +78,22 @@ const categoryStore = (set: any) => {
         }, false, 'update_category/error')
       }
     },
+    updateCategorySizeChart: async(data: object, id: string, token: string) => {
+      try {
+        const res = await patchDataAPI(`/category/${id}/sizeChart`, data, token)
+
+        set((state: GlobalStoreState) => {
+          state.categoryState.data = state.categoryState.data.map(item => item._id === id ? res.data.category : item)
+          state.alertState.message = res.data.msg
+          state.alertState.type = 'success'
+        }, false, 'update_category_size_chart/success')
+      } catch (err: any) {
+        set((state: GlobalStoreState) => {
+          state.alertState.message = err.response.data.msg
+          state.alertState.type = 'error'
+        }, false, 'update_category_size_chart/error')
+      }
+    },
     deleteCategory: async(id: string, page: number, token: string) => {
       try {
         const nextDataRes = await getDataAPI(`/category?page=${page + 1}&limit=9`, token)

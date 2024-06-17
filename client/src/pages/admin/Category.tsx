@@ -60,12 +60,18 @@ const Category = () => {
     setOpenDeleteModal(true)
   }
 
+  const handleClickDefaultSize = (item: ICategory) => {
+    setSelectedCategory(item)
+    setOpenSetDefaultSizeModal(true)
+  }
+
   const handleDelete = () => {
     if (categoryState.data.length === 1 && page !== 1) {
       navigate(`/admin/category?page=${page - 1}`)
     }
     deleteCategory(selectedCategory._id!, page, userState.data.accessToken!)
     setOpenDeleteModal(false)
+    setSelectedCategory({})
   }
 
   useEffect(() => {
@@ -84,6 +90,7 @@ const Category = () => {
     const checkIfClickedOutside = (e: MouseEvent) => {
       if  (openSetDefaultSizeModal && setDefaultSizeModalRef.current && !setDefaultSizeModalRef.current.contains(e.target as Node)) {
         setOpenSetDefaultSizeModal(false)
+        setSelectedCategory({})
       }
     }
 
@@ -180,7 +187,7 @@ const Category = () => {
                                   <td className='flex items-center gap-5 py-4'>
                                     <MdEdit onClick={() => handleClickEdit(item)} className='text-blue-500 text-xl cursor-pointer' />
                                     <FaTrashAlt onClick={() => handleClickDelete(item)} className='text-red-500 text-lg cursor-pointer' />
-                                    <VscTextSize onClick={() => setOpenSetDefaultSizeModal(true)} className='text-xl text-orange-500 cursor-pointer' />
+                                    <VscTextSize onClick={() => handleClickDefaultSize(item)} className='text-xl text-orange-500 cursor-pointer' />
                                   </td>
                                 </tr>
                               ))
@@ -219,6 +226,8 @@ const Category = () => {
         openSetDefaultSizeModal={openSetDefaultSizeModal}
         setOpenSetDefaultSizeModal={setOpenSetDefaultSizeModal}
         setDefaultSizeModalRef={setDefaultSizeModalRef}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
       />
 
       <Delete

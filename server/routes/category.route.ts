@@ -12,4 +12,6 @@ router.route('/:id')
   .patch(isAuthenticated, authorizeRoles('admin'), categoryCtrl.update)
   .delete(isAuthenticated, authorizeRoles('admin'), categoryCtrl.delete)
 
+router.route('/:id/sizeChart').patch(isAuthenticated, authorizeRoles('admin'), categoryCtrl.updateSizeChart)
+
 export default router

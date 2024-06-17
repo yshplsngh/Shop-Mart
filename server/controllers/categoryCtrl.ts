@@ -122,24 +122,64 @@ const categoryCtrl = {
       const uniqueAvailableSizes = getUniqueValues(availableSizes)
       const uniqueAvailableSizeParameters = getUniqueValues(availableSizeParameters)
 
-      // for (const chart of sizeChart) {
-      //   let sizeChartKey = Object.keys(chart)
-      //   sizeChartKey = sizeChartKey.filter(item => item !== 'size')
+      if (category.sizeChart.length > 0) {
+        const currentSizes: string[] = []
+        for (const chart of category.sizeChart) {
+          // @ts-ignore
+          currentSizes.push(chart.size)
+        }
 
-      //   if (!checkArrayEquality(sizeChartKey, uniqueAvailableSizeParameters))
-      //     return res.status(400).json({ msg: `Please provide correct size parameter for ${category.name} category.` })
-      // }
+        const currentParams: string[] = []
+        for (const param of Object.keys(category.sizeChart[0])) {
+          if (param !== 'size') 
+            currentParams.push(param)
+        }
 
-      // const providedSizes = []
-      // for (const chart of sizeChart) {
-      //   if (!Object.keys(chart).includes('size'))
-      //     return res.status(400).json({ msg: 'Provided object key is not valid.' })
+        let newParams = [...currentParams]
+        const missingParamInCurrentDB = uniqueAvailableSizeParameters.filter(item => !currentParams.includes(item))
+        newParams = [...newParams, ...missingParamInCurrentDB]
 
-      //   providedSizes.push(chart.size)
-      // }
+        const overflowParamInCurrentDB = currentParams.filter(item => !uniqueAvailableSizeParameters.includes(item))
+        newParams = newParams.filter(item => !overflowParamInCurrentDB.includes(item))
+        
+        let newSizes = [...currentSizes]
+        const missingSizeInCurrentDB = uniqueAvailableSizes.filter(item => !currentSizes.includes(item))
+        newSizes = [...newSizes, ...missingSizeInCurrentDB]
 
-      // if (!checkArrayEquality(providedSizes, uniqueAvailableSizes))
-      //   return res.status(400).json({ msg: `Please provide correct size for ${category.name} category.` })
+        const overflowSizeInCurrentDB = currentSizes.filter(item => !uniqueAvailableSizes.includes(item))
+        newSizes = newSizes.filter(item => !overflowSizeInCurrentDB.includes(item))
+
+        let newSizeChart = category.sizeChart
+
+        for (const param of missingParamInCurrentDB) {
+          for (let i = 0; i < newSizeChart.length; i++) {
+            // @ts-ignore
+            newSizeChart[i][param] = ''
+          }
+        }
+
+        for (const param of overflowParamInCurrentDB) {
+          for (let i = 0; i < newSizeChart.length; i++) {
+            // @ts-ignore
+            delete newSizeChart[i][param]
+          }
+        }
+
+        for (const size of missingSizeInCurrentDB) {
+          const newSizeChartKey = { size }
+          for (const param of newParams) {
+            // @ts-ignore
+            newSizeChartKey[param] = ''
+          }
+          newSizeChart.push(newSizeChartKey)
+        }
+
+        // @ts-ignore
+        newSizeChart = newSizeChart.filter(item => newSizes.includes(item.size))
+
+        category.sizeChart = newSizeChart
+        await category.save()
+      }
       
       await Category.findByIdAndUpdate(id, {
         name,
@@ -154,6 +194,49 @@ const categoryCtrl = {
           name,
           availableSizes: uniqueAvailableSizes,
           availableSizeParameters: uniqueAvailableSizeParameters
+        }
+      })
+    } catch (err: any) {
+      return res.status(500).json({ msg: err.message })
+    }
+  },
+  updateSizeChart: async(req: Request, res: Response) => {
+    try {
+      const { id } = req.params
+      const category = await Category.findById(id)
+      if (!category)
+        return res.status(404).json({ msg: `Category with ID ${id} not found.` })
+
+      const { sizeChart } = req.body
+      const uniqueAvailableSizes = getUniqueValues(category.availableSizes)
+      const uniqueAvailableSizeParameters = getUniqueValues(category.availableSizeParameters)
+
+      for (const chart of sizeChart) {
+        let sizeChartKey = Object.keys(chart)
+        sizeChartKey = sizeChartKey.filter(item => item !== 'size')
+
+        if (!checkArrayEquality(sizeChartKey, uniqueAvailableSizeParameters))
+          return res.status(400).json({ msg: `Please provide correct size parameter for ${category.name} category.` })
+      }
+
+      const providedSizes = []
+      for (const chart of sizeChart) {
+        if (!Object.keys(chart).includes('size'))
+          return res.status(400).json({ msg: 'Provided object key is not valid.' })
+
+        providedSizes.push(chart.size)
+      }
+
+      if (!checkArrayEquality(providedSizes, uniqueAvailableSizes))
+        return res.status(400).json({ msg: `Please provide correct size for ${category.name} category.` })
+
+      await Category.findByIdAndUpdate(id, { sizeChart })
+
+      return res.status(200).json({
+        msg: `Category with ID ${id} size chart has been updated successfully.`,
+        category: {
+          ...category._doc,
+          sizeChart
         }
       })
     } catch (err: any) {

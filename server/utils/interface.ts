@@ -34,3 +34,30 @@ export interface ICategory extends IGeneralField {
   availableSizeParameters: string[]
   sizeChart: object[]
 }
+
+export interface IProductColor {
+  hexCode: string
+  colorName: string
+  sizes: IProductSize[]
+}
+
+export interface IProductSize {
+  size: string
+  stock: number
+  available: number
+}
+
+export interface IProduct extends IGeneralField {
+  name: string
+  shortDescription: string
+  longDescription: string
+  price: number
+  weight: number
+  width: number
+  length: number
+  height: number
+  category: ObjectId
+  colors: IProductColor[]
+  images: string[]
+  sizeChart: object[]
+}
