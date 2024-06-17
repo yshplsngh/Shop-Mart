@@ -63,10 +63,6 @@ const productSchema = new mongoose.Schema<IProduct>({
           stock: {
             type: Number,
             required: true
-          },
-          available: {
-            type: Number,
-            required: true
           }
         }
       ]

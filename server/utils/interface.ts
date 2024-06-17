@@ -44,7 +44,6 @@ export interface IProductColor {
 export interface IProductSize {
   size: string
   stock: number
-  available: number
 }
 
 export interface IProduct extends IGeneralField {

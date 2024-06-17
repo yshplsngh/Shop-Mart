@@ -111,8 +111,13 @@ const Category = () => {
   }, [openDeleteModal])
   
   useEffect(() => {
-    if (userState.data.accessToken)
-      readCategory(userState.data.accessToken, page, limit, keyword)
+    if (userState.data.accessToken) {
+      if (keyword) {
+        readCategory(userState.data.accessToken, 1, limit, keyword)
+      } else {
+        readCategory(userState.data.accessToken, page, limit, keyword)
+      }
+    }
   }, [userState.data.accessToken, page, limit, readCategory, keyword])
 
   useEffect(() => {

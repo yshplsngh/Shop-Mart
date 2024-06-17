@@ -8,6 +8,7 @@ export interface GlobalStoreState {
   alertState: IAlertState
   userState: IUserState
   categoryState: ICategoryState
+  productState: IProductState
 }
 
 export interface IGeneralField {
@@ -51,6 +52,39 @@ export interface ICategory extends IGeneralField {
 
 export interface ICategoryState {
   data: ICategory[]
+  totalPage: number
+  totalData: number
+  loading: boolean
+}
+
+export interface IProductColor {
+  hexCode: string
+  colorName: string
+  sizes: IProductSize[]
+}
+
+export interface IProductSize {
+  size: string
+  stock: number
+}
+
+export interface IProduct extends IGeneralField {
+  name: string
+  shortDescription: string
+  longDescription: string
+  price: number
+  weight: number
+  width: number
+  length: number
+  height: number
+  category: string
+  colors: IProductColor[]
+  images: string[]
+  sizeChart: object[]
+}
+
+export interface IProductState {
+  data: IProduct[]
   totalPage: number
   totalData: number
   loading: boolean
