@@ -7,6 +7,7 @@ import { APP_NAME } from './../../utils/constant'
 import useStore from './../../store/store'
 import Logo from './Logo'
 import { MdLogout } from 'react-icons/md'
+import { RiDashboard3Fill } from 'react-icons/ri'
 
 const Navbar = () => {
   const [onScroll, setOnScroll] = useState(false)
@@ -125,7 +126,14 @@ const Navbar = () => {
                     <p>{userState.data.user?.name}</p>
                   </div>
                   <div className={`absolute top-full mt-3 border border-gray-300 rounded-md w-[180px] right-0 bg-white ${openProfileDropdown ? 'scale-y-100' : 'scale-y-0'} transition origin-top`}>
-                    <div onClick={handleLogout} className='flex items-center gap-3 py-3 px-4 hover:bg-gray-100 transition cursor-pointer rounded-md'>
+                    {
+                      userState.data.user?.role === 'admin' &&
+                      <Link to='/admin' className='flex items-center gap-3 px-4 py-3 hover:bg-gray-100 transition cursor-pointer rounded-t-md border-b bordeer-gray-300'>
+                        <RiDashboard3Fill />
+                        <p>Dashboard</p>
+                      </Link>
+                    }
+                    <div onClick={handleLogout} className='flex items-center gap-3 py-3 px-4 hover:bg-gray-100 transition cursor-pointer rounded-b-md'>
                       <MdLogout />
                       <p>Logout</p>
                     </div>

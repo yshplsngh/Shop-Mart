@@ -9,6 +9,7 @@ router.route('/')
   .post(isAuthenticated, authorizeRoles('admin'), productCtrl.create)
 
 router.route('/:id')
+  .get(productCtrl.readById)
   .patch(isAuthenticated, authorizeRoles('admin'), productCtrl.update)
   .delete(isAuthenticated, authorizeRoles('admin'), productCtrl.delete)
 

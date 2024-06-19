@@ -9,6 +9,7 @@ export interface GlobalStoreState {
   userState: IUserState
   categoryState: ICategoryState
   productState: IProductState
+  productDiscountState: IProductDiscountState
 }
 
 export interface IGeneralField {
@@ -85,6 +86,20 @@ export interface IProduct extends IGeneralField {
 
 export interface IProductState {
   data: IProduct[]
+  totalPage: number
+  totalData: number
+  loading: boolean
+}
+
+export interface IProductDiscount extends IGeneralField {
+  product: IProduct
+  percentage: number
+  startDate: string
+  endDate: string
+}
+
+export interface IProductDiscountState {
+  data: IProductDiscount[]
   totalPage: number
   totalData: number
   loading: boolean

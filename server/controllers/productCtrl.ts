@@ -4,6 +4,7 @@ import Category from '../models/Category'
 import { checkArrayEquality } from '../utils/helper'
 import Product from '../models/Product'
 import { pagination } from '../utils/pagination'
+import ProductDiscount from '../models/ProductDiscount'
 
 const productCtrl = {
   create: async(req: Request, res: Response) => {
@@ -194,6 +195,18 @@ const productCtrl = {
       return res.status(500).json({ msg: err.message })
     }
   },
+  readById: async(req: Request, res: Response) =>{ 
+    try {
+      const { id } = req.params
+      const product = await Product.findById(id).populate('category')
+      if (!product)
+        return res.status(404).json({ msg: `Product with ID ${id} not found.` })
+
+      return res.status(200).json({ product })
+    } catch (err: any) {
+      return res.status(500).json({ msg: err.message })
+    }
+  },
   update: async(req: Request, res: Response) => {
     try {
       const { id } = req.params
@@ -261,8 +274,8 @@ const productCtrl = {
         }
       }
 
-      const colorsKey = ['hexCode', 'colorName', 'sizes']
-      const sizesKey = ['size', 'stock']
+      const colorsKey = ['hexCode', 'colorName', 'sizes', '_id']
+      const sizesKey = ['size', 'stock', '_id']
       for (const color of colors) {
         const providedColorKeys = Object.keys(color)
         if (!checkArrayEquality(providedColorKeys, colorsKey))
@@ -302,7 +315,7 @@ const productCtrl = {
           width,
           length,
           height,
-          category,
+          category: matchedCategory,
           colors,
           images,
           sizeChart
@@ -313,7 +326,6 @@ const productCtrl = {
     }
   },
   delete: async(req: Request, res: Response) => {
-    // delete correlated productDiscount
     try {
       const { id } = req.params
       const product = await Product.findById(id)
@@ -322,6 +334,10 @@ const productCtrl = {
         return res.status(404).json({ msg: `Product with ID ${id} not found.` })
 
       await Product.findByIdAndDelete(id)
+
+      const productDiscount = await ProductDiscount.find({ product: id })
+      if (productDiscount.length > 0)
+        await ProductDiscount.findByIdAndDelete(productDiscount[0]._id)
 
       return res.status(200).json({
         msg: `Product with ID ${id} has been deleted successfully.`,

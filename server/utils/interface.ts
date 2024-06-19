@@ -60,3 +60,11 @@ export interface IProduct extends IGeneralField {
   images: string[]
   sizeChart: object[]
 }
+
+export interface IProductDiscount extends IGeneralField {
+  product: ObjectId
+  percentage: number
+  startDate: Date
+  endDate: Date
+  active: number
+}

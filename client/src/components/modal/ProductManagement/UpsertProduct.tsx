@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { AiOutlineClose, AiOutlineSearch } from 'react-icons/ai'
-import { FormChanged, FormSubmitted, ICategory, IProductColor } from '../../../utils/interface'
+import { useNavigate } from 'react-router-dom'
+import { FormChanged, FormSubmitted, ICategory, IProduct, IProductColor } from '../../../utils/interface'
 import { APP_NAME } from '../../../utils/constant'
 import useStore from './../../../store/store'
 import { getDataAPI } from '../../../utils/fetchData'
@@ -9,12 +10,16 @@ interface IProps {
   openUpsertProductModal: boolean
   setOpenUpsertProductModal: React.Dispatch<React.SetStateAction<boolean>>
   upsertProductModalRef: React.MutableRefObject<HTMLDivElement>
+  selectedProduct: Partial<IProduct>
+  setSelectedProduct: React.Dispatch<React.SetStateAction<Partial<IProduct>>>
 }
 
-const UpsertProduct: React.FC<IProps> = ({ openUpsertProductModal, setOpenUpsertProductModal, upsertProductModalRef }) => {
+const UpsertProduct: React.FC<IProps> = ({ openUpsertProductModal, setOpenUpsertProductModal, upsertProductModalRef, selectedProduct, setSelectedProduct }) => {
   const [categoryData, setCategoryData] = useState<ICategory[]>([])
   const [categoryKeyword, setCategoryKeyword] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<Partial<ICategory>>({})
+
+  const navigate = useNavigate()
 
   const [loading, setLoading] = useState(false)
 
@@ -36,7 +41,7 @@ const UpsertProduct: React.FC<IProps> = ({ openUpsertProductModal, setOpenUpsert
 
   const [images, setImages] = useState<any[]>([])
 
-  const { userState, createProduct } = useStore()
+  const { userState, createProduct, updateProduct } = useStore()
 
   const handleChange = (e: FormChanged) => {
     const { name, value } = e.target
@@ -122,14 +127,39 @@ const UpsertProduct: React.FC<IProps> = ({ openUpsertProductModal, setOpenUpsert
     e.preventDefault()
     setLoading(true)
 
-    await createProduct({
-      ...productData,
-      sizeChart,
-      colors,
-      images
-    }, userState.data.accessToken!)
-
-    setOpenUpsertProductModal(false)
+    if (Object.keys(selectedProduct).length > 0) {
+      await updateProduct(selectedProduct._id!, {
+        ...productData,
+        sizeChart,
+        colors,
+        images
+      }, userState.data.accessToken!)
+      setOpenUpsertProductModal(false)
+    } else {
+      await createProduct({
+        ...productData,
+        sizeChart,
+        colors,
+        images
+      }, userState.data.accessToken!)
+      setOpenUpsertProductModal(false)
+      setProductData({
+        name: '',
+        shortDescription: '',
+        longDescription: '',
+        price: 0,
+        weight: 0,
+        width: 0,
+        length: 0,
+        height: 0,
+        category: ''
+      })
+      setSelectedCategory({})
+      setSizeChart([])
+      setColors([])
+      setImages([])
+      navigate('/admin/product')
+    }
 
     setLoading(false)
   }
@@ -182,24 +212,72 @@ const UpsertProduct: React.FC<IProps> = ({ openUpsertProductModal, setOpenUpsert
       ])
     }
 
-    if (Object.keys(selectedCategory).length > 0) {
-      if (Object.keys(selectedCategory.sizeChart!).length > 0) {
-        setSizeChart(selectedCategory.sizeChart!)
+    if (Object.keys(selectedProduct).length < 1) {
+      if (Object.keys(selectedCategory).length > 0) {
+        if (Object.keys(selectedCategory.sizeChart!).length > 0) {
+          setSizeChart(selectedCategory.sizeChart!)
+        } else {
+          injectDefaultSize()
+        }
+        injectStockTemplate()
       } else {
-        injectDefaultSize()
+        setSizeChart([])
+        setColors([])
       }
-      injectStockTemplate()
+    }
+  }, [selectedCategory, selectedProduct])
+
+  useEffect(() => {
+    if (Object.keys(selectedProduct).length > 0) {
+      setProductData({
+        name: selectedProduct.name as string,
+        shortDescription: selectedProduct.shortDescription as string,
+        longDescription: selectedProduct.longDescription as string,
+        price: selectedProduct.price as number,
+        weight: selectedProduct.weight as number,
+        width: selectedProduct.width as number,
+        length: selectedProduct.length as number,
+        height: selectedProduct.height as number,
+        // @ts-ignore
+        category: selectedProduct.category._id as string
+      })
+
+      // @ts-ignore
+      setSelectedCategory(selectedProduct.category)
+
+      // @ts-ignore
+      setSizeChart(selectedProduct.sizeChart)
+
+      // @ts-ignore
+      setColors(selectedProduct.colors)
+
+      
+      setImages(selectedProduct.images as string[])
     } else {
+      setProductData({
+        name: '',
+        shortDescription: '',
+        longDescription: '',
+        price: 0,
+        weight: 0,
+        width: 0,
+        length: 0,
+        height: 0,
+        category: ''
+      })
+
+      setSelectedCategory({})
       setSizeChart([])
       setColors([])
+      setImages([])
     }
-  }, [selectedCategory])
+  }, [selectedProduct])
 
   return (
     <div className={`${openUpsertProductModal ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} fixed top-0 left-0 bottom-0 right-0 bg-[rgba(0,0,0,.6)] flex items-center justify-center transition-opacity`}>
       <div ref={upsertProductModalRef} className={`w-1/2 flex flex-col max-h-[90%] bg-white rounded-lg ${openUpsertProductModal ? 'translate-y-0' : '-translate-y-10'} transition-transform`}>
         <div className='flex items-center justify-between px-6 py-3 border-b border-gray-300 bg-gray-900 text-white rounded-t-lg'>
-          <p className='font-semibold'>Create Product</p>
+          <p className='font-semibold'>{Object.keys(selectedProduct).length > 0 ? 'Update' : 'Create'} Product</p>
           <AiOutlineClose onClick={() => setOpenUpsertProductModal(false)} className='cursor-pointer' />
         </div>
         <form onSubmit={handleSubmit} className='px-6 py-5 hide-scrollbar overflow-auto flex-1'>
@@ -269,7 +347,7 @@ const UpsertProduct: React.FC<IProps> = ({ openUpsertProductModal, setOpenUpsert
                       </div>
                     )
                     : (
-                      <div className='absolute left-0 top-full bg-whte rounded-md mt-2 shadow-lg w-full border border-gray-300 bg-white'>
+                      <div className='absolute left-0 top-full rounded-md mt-2 shadow-lg w-full border border-gray-300 bg-white'>
                         {
                           categoryData.map((item, idx) => (
                             <div key={item._id} onClick={() => handleClickCategory(item)} className={`hover:bg-gray-100 transition cursor-pointer w-full p-3 ${idx === 0 && categoryData.length > 1 ? 'rounded-t-md border-b border-gray-300' : idx === categoryData.length - 1 && categoryData.length > 1 ? 'rounded-b-md' : idx === 0 && categoryData.length === 1 ? 'rounded-md' : ''}`}>
@@ -366,9 +444,9 @@ const UpsertProduct: React.FC<IProps> = ({ openUpsertProductModal, setOpenUpsert
               images.length > 0 &&
               <div className='mt-4 flex items-center flex-wrap gap-4'>
                 {
-                  images.map((img, idx) => (
+                  images.map((img: File | string, idx) => (
                     <div key={idx} className='w-20 h-20 rounded-md bg-gray-100 border border-gray-300 relative'>
-                      <img src={URL.createObjectURL(img)} alt={`${APP_NAME} ${productData.name}`} className='w-full h-full object-cover rounded-md' />
+                      <img src={(typeof(img) !== 'string' ? URL.createObjectURL(img) : img)} alt={`${APP_NAME} ${productData.name}`} className='w-full h-full object-cover rounded-md' />
                       <div onClick={() => handleRemoveImage(idx)} className='bg-red-500 text-white text-xs p-1 outline outline-offset-2 outline-white rounded-full absolute w-fit -top-2 -right-2 cursor-pointer'>
                         <AiOutlineClose />
                       </div>
@@ -383,7 +461,7 @@ const UpsertProduct: React.FC<IProps> = ({ openUpsertProductModal, setOpenUpsert
               {
                 loading
                 ? 'Loading ...'
-                : 'Save'
+                : Object.keys(selectedProduct).length > 0 ? 'Save Changes' : 'Save'
               }
             </button>
           </div>

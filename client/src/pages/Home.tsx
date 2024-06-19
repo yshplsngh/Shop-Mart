@@ -25,14 +25,14 @@ const Home = () => {
         <h1 className='text-center text-4xl font-semibold'>Best Seller</h1>
         <p className='text-sm text-gray-400 text-center mt-4'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati eos consequuntur itaque quam illo.</p>
         <div className='grid xl:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-8 mt-12'>
+          {/* <ProductCard />
           <ProductCard />
           <ProductCard />
           <ProductCard />
           <ProductCard />
           <ProductCard />
           <ProductCard />
-          <ProductCard />
-          <ProductCard />
+          <ProductCard /> */}
         </div>
       </div>
       <div className='md:px-12 px-6 md:mb-28 mb-16 flex md:flex-row flex-col items-center justify-between md:gap-14 gap-7'>

@@ -21,6 +21,7 @@ app.use(cookieParser())
 app.use('/user', routes.user)
 app.use('/category', routes.category)
 app.use('/product', routes.product)
+app.use('/productDiscount', routes.productDiscount)
 
 connectDB()
 

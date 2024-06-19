@@ -1,10 +1,68 @@
-import Footer from "../../components/general/Footer"
-import Navbar from "../../components/general/Navbar"
-import Pagination from "../../components/general/Pagination"
-import ProductCard from "../../components/general/ProductCard"
-import HeadInfo from "../../utils/HeadInfo"
+import { useState, useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { ICategory, IProduct } from './../../utils/interface'
+import Footer from './../../components/general/Footer'
+import Navbar from './../../components/general/Navbar'
+import Pagination from './../../components/general/Pagination'
+import ProductCard from './../../components/general/ProductCard'
+import HeadInfo from './../../utils/HeadInfo'
+import { getDataAPI } from '../../utils/fetchData'
+import Loader from '../../components/general/Loader'
 
 const Products = () => {
+  const [categories, setCategories] = useState<ICategory[]>([])
+  const [products, setProducts] = useState<IProduct[]>([])
+  const [totalData, setTotalData] = useState(0)
+  const [totalPage, setTotalPage] = useState(0)
+  const [selectedCategory, setSelectedCategory] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const navigate = useNavigate()
+  const { search } = useLocation()
+  const searchParams = new URLSearchParams(search)
+  const page = Number(searchParams.get('page')) || 1
+  const limit = 6
+
+  const handleChangePage = (type: string) => {
+    if (type === 'previous') {
+      if (page > 1) {
+        navigate(`/products?page=${page - 1}`)
+      } else {
+        navigate('/products')
+      }
+    } else if (type === 'next') {
+      if (page === totalPage) {
+        navigate(`/products?page=${totalPage}`)
+      } else {
+        navigate(`/products?page=${page + 1}`)
+      }
+    }
+  }
+
+  useEffect(() => {
+    const fetchProducts = async(page: number, category: string) => {
+      const url = category ? `/product?page=${page}&limit=${limit}&category=${category}` : `/product?page=${page}&limit=${limit}`
+      
+      setLoading(true)
+      const res = await getDataAPI(url)
+      setLoading(false)
+      setProducts(res.data.product)
+      setTotalData(res.data.totalData)
+      setTotalPage(res.data.totalPage)
+    }
+
+    fetchProducts(page, selectedCategory)
+  }, [page, limit, selectedCategory])
+
+  useEffect(() => {
+    const fetchCategories = async() => {
+      const res = await getDataAPI('/category/all')
+      setCategories(res.data.category)
+    }
+
+    fetchCategories()
+  }, [])
+  
   return (
     <>
       <HeadInfo title='Browse Products' />
@@ -18,46 +76,63 @@ const Products = () => {
         {/* filter */}
         <div className='mt-12'>
           <div className='flex items-center justify-center gap-3 flex-wrap'>
-            <div className='rounded-full px-5 py-2 bg-black text-white transition cursor-pointer'>
-              <p className='text-sm'>Jackets</p>
+            <div onClick={() => setSelectedCategory('')} className={`rounded-full px-5 py-2 ${selectedCategory === '' ? 'bg-black text-white' : 'bg-gray-100 hover:bg-black text-gray-500 hover:text-white'} transition cursor-pointer`}>
+              <p className='text-sm'>All</p>
             </div>
-            <div className='rounded-full px-5 py-2 bg-gray-100 hover:bg-black text-gray-500 hover:text-white transition cursor-pointer'>
-              <p className='text-sm'>T-Shirts</p>
-            </div>
-            <div className='rounded-full px-5 py-2 bg-gray-100 hover:bg-black text-gray-500 hover:text-white transition cursor-pointer'>
-              <p className='text-sm'>Bottoms</p>
-            </div>
-            <div className='rounded-full px-5 py-2 bg-gray-100 hover:bg-black text-gray-500 hover:text-white transition cursor-pointer'>
-              <p className='text-sm'>Footwear</p>
-            </div>
-            <div className='rounded-full px-5 py-2 bg-gray-100 hover:bg-black text-gray-500 hover:text-white transition cursor-pointer'>
-              <p className='text-sm'>Knitwear</p>
-            </div>
-            <div className='rounded-full px-5 py-2 bg-gray-100 hover:bg-black text-gray-500 hover:text-white transition cursor-pointer'>
-              <p className='text-sm'>Crop Top</p>
-            </div>
+            {
+              categories.map(item => (
+                <div key={item._id} onClick={() => setSelectedCategory(item._id)} className={`rounded-full px-5 py-2 ${item._id === selectedCategory ? 'bg-black text-white' : 'bg-gray-100 hover:bg-black text-gray-500 hover:text-white'} transition cursor-pointer`}>
+                  <p className='text-sm'>{item.name}</p>
+                </div>
+              ))
+            }
           </div>
-          <p className='text-sm text-gray-500 text-center mt-6'>(128 Products Available)</p>
+          <p className='text-sm text-gray-500 text-center mt-6'>({totalData} Products Available)</p>
         </div>
         {/* product list */}
         <div className='mt-12'>
-          <div className='grid xl:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-8'>
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-          </div>
-          <div className='mt-16 flex justify-center'>
-            <Pagination
-              currentPage={0}
-              totalPage={0}
-              handleChangePage={(type: string) => {}}
-            />
-          </div>
+          {
+            loading
+            ? (
+              <div className='mt-8 flex justify-center'>
+                <Loader size='xl' />
+              </div>
+            )
+            : (
+              products.length === 0
+              ? (
+                <div className='bg-red-500 rounded-md text-center text-white font-bold py-3 text-sm'>
+                  <p>No records found</p>
+                </div>
+              )
+              : (
+                <div className='grid xl:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-8'>
+                  {
+                    products.map(item => (
+                      <ProductCard
+                        key={item._id}
+                        id={item._id}
+                        name={item.name}
+                        price={item.price}
+                        image={item.images[0]}
+                      />
+                    ))
+                  }
+                </div>
+              )
+            )
+          }
+          
+          {
+            totalPage > 1 &&
+            <div className='mt-16 flex justify-center'>
+              <Pagination
+                currentPage={page}
+                totalPage={totalPage}
+                handleChangePage={handleChangePage}
+              />
+            </div>
+          }
         </div>
       </div>
       <Footer />
