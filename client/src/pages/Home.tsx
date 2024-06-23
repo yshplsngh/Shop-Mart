@@ -17,7 +17,7 @@ const Home = () => {
           <h1 style={{ wordSpacing: '10px' }} className='text-6xl tracking-widest font-semibold text-center'>MINIMALIST STYLE</h1>
           <p className='text-center text-gray-300 mt-6 text-lg'>When less is more, when classy meets elegansy</p>
           <div className='mt-8 flex justify-center'>
-            <Link to='/' className='px-10 py-3 text-sm bg-white text-black font-semibold shadow-xl rounded-full'>Explore Products</Link>
+            <Link to='/products' className='px-10 py-3 text-sm bg-white text-black font-semibold shadow-xl rounded-full'>Explore Products</Link>
           </div>
         </div>
       </div>

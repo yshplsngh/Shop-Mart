@@ -8,14 +8,17 @@ import useStore from './../../store/store'
 import Logo from './Logo'
 import { MdLogout } from 'react-icons/md'
 import { RiDashboard3Fill } from 'react-icons/ri'
+import Search from '../modal/Navbar/Search'
 
 const Navbar = () => {
   const [onScroll, setOnScroll] = useState(false)
   const [openSidebar, setOpenSidebar] = useState(false)
   const [openProfileDropdown, setOpenProfileDropdown] = useState(false)
+  const [openSearchModal, setOpenSearchModal] = useState(false)
 
   const sidebarRef = useRef() as React.MutableRefObject<HTMLDivElement>
   const profileDropdownRef = useRef() as React.MutableRefObject<HTMLDivElement>
+  const searchModalRef = useRef() as React.MutableRefObject<HTMLDivElement>
   
   const { userState, logout } = useStore()
 
@@ -60,6 +63,17 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', checkIfClickedOutside)
   }, [openProfileDropdown])
 
+  useEffect(() => {
+    const checkIfClickedOutside = (e: MouseEvent) => {
+      if (openSearchModal && searchModalRef.current && !searchModalRef.current.contains(e.target as Node)) {
+        setOpenSearchModal(false)
+      }
+    }
+
+    document.addEventListener('mousedown', checkIfClickedOutside)
+    return () => document.removeEventListener('mousedown', checkIfClickedOutside)
+  }, [openSearchModal])
+
   return (
     <>
       <div className={`flex md:px-12 px-6 py-4 gap-20 items-center justify-between sticky top-0 z-10 bg-white ${onScroll ? 'shadow-lg' : 'shadow-none'}`}>
@@ -76,18 +90,9 @@ const Navbar = () => {
             <AiOutlineClose onClick={() => setOpenSidebar(false)} className='cursor-pointer float-right mb-6' />
           </div>
           <div className='clear-both md:hidden' />
-          <div className='flex md:flex-row flex-col md:items-center md:gap-7 gap-4 text-sm'>
-            <div>
-              <p className='cursor-pointer'>Categories</p>
-            </div>
-            <div>
-              <p className='cursor-pointer'>Collections</p>
-            </div>
-            <Link to='/'>New Arrival</Link>
-            <Link to='/'>Exchange Reward</Link>
-          </div>
+          <div className='flex md:flex-row flex-col md:items-center md:gap-7 gap-4 text-sm' />
           <div className='text-sm flex items-center justify-center md:gap-14 gap-4 md:mt-0 mt-8'>
-            <div className='flex items-center gap-3 cursor-pointer'>
+            <div onClick={() => setOpenSearchModal(true)} className='flex items-center gap-3 cursor-pointer'>
               <div className='rounded-full p-2 bg-gray-800 text-white flex items-center justify-center'>
                 <AiOutlineSearch />
               </div>
@@ -144,6 +149,12 @@ const Navbar = () => {
           </div>
         </div>
       </div>
+      
+      <Search
+        openSearchModal={openSearchModal}
+        setOpenSearchModal={setOpenProfileDropdown}
+        searchModalRef={searchModalRef}
+      />
     </>
   )
 }

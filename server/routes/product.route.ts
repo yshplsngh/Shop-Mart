@@ -13,4 +13,6 @@ router.route('/:id')
   .patch(isAuthenticated, authorizeRoles('admin'), productCtrl.update)
   .delete(isAuthenticated, authorizeRoles('admin'), productCtrl.delete)
 
+router.route('/:id/similar').get(productCtrl.similarProduct)
+
 export default router

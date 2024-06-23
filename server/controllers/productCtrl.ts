@@ -346,6 +346,16 @@ const productCtrl = {
     } catch (err: any) {
       return res.status(500).json({ msg: err.message })
     }
+  },
+  similarProduct: async(req: Request, res: Response) => {
+    const { id } = req.params
+
+    const product = await Product.findById(id)
+    if (!product)
+      return res.status(404).json({ msg: `Product with ID ${id} not found.` })
+
+    const similarProducts = await Product.find({ category: product.category, _id: { $ne: id } }).limit(4)
+    return res.status(200).json({ similarProducts })
   }
 }
 
