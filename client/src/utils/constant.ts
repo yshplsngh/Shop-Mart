@@ -1,1 +1,1 @@
-export const APP_NAME = 'Lorem Ipsum'
+export const APP_NAME = 'Urban Elegance'

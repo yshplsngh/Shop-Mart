@@ -5,13 +5,15 @@ import userStore from './userStore'
 import categoryStore from './categoryStore'
 import productStore from './productStore'
 import productDiscountStore from './productDiscountStore'
+import ownerPickStore from './ownerPickStore'
 
 let combineStores = (set: any) => ({
   ...alertStore(set),
   ...userStore(set),
   ...categoryStore(set),
   ...productStore(set),
-  ...productDiscountStore(set)
+  ...productDiscountStore(set),
+  ...ownerPickStore(set)
 })
 
 export default create(devtools(combineStores))

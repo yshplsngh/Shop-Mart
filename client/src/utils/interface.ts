@@ -10,6 +10,7 @@ export interface GlobalStoreState {
   categoryState: ICategoryState
   productState: IProductState
   productDiscountState: IProductDiscountState
+  ownerPickState: IOwnerPickState
 }
 
 export interface IGeneralField {
@@ -82,6 +83,7 @@ export interface IProduct extends IGeneralField {
   colors: IProductColor[]
   images: string[]
   sizeChart: object[]
+  discount: number
 }
 
 export interface IProductState {
@@ -102,5 +104,14 @@ export interface IProductDiscountState {
   data: IProductDiscount[]
   totalPage: number
   totalData: number
+  loading: boolean
+}
+
+export interface IOwnerPick extends IGeneralField {
+  product: IProduct
+}
+
+export interface IOwnerPickState {
+  data: IOwnerPick[]
   loading: boolean
 }

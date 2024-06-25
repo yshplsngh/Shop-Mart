@@ -9,9 +9,10 @@ interface IProps {
   name: string
   price: number
   image: string
+  discount?: number
 }
 
-const ProductCard: React.FC<IProps> = ({ id, name, price, image }) => {
+const ProductCard: React.FC<IProps> = ({ id, name, price, image, discount }) => {
   const navigate = useNavigate()
 
   const handleClickProduct = () => {
@@ -22,6 +23,12 @@ const ProductCard: React.FC<IProps> = ({ id, name, price, image }) => {
   return (
     <div className=''>
       <div className='cursor-pointer w-full h-80 bg-gray-100 rounded-xl mb-6 relative'>
+        {
+          discount! > 0 &&
+          <div className='absolute top-4 left-4 bg-red-500 text-sm px-2 py-1 rounded-md text-white font-semibold shadow-lg'>
+            <p>{discount}% Off</p>
+          </div>
+        }
         <div className='p-1 bg-white rounded-full w-fit text-2xl absolute top-4 right-5 cursor-pointer'>
           <CiHeart />
         </div>

@@ -31,6 +31,7 @@ const Detail = () => {
     // @ts-ignore
     if (size.stock !== 0) {
       setSelectedSize(size)
+      setQty(1)
     }
   }
 
@@ -126,7 +127,15 @@ const Detail = () => {
                   }
                 </div>
                 <div className='flex-1'>
-                  <h1 className='font-medium text-4xl'>{product.name}</h1>
+                  <div className='flex items-center gap-4'>
+                    <h1 className='font-medium text-4xl'>{product.name}</h1>
+                    {
+                      product.discount! > 0 &&
+                      <div className='bg-red-500 text-white text-sm font-semibold px-2 py-1 rounded-md shadow-lg'>
+                        <p>{product.discount}% Off</p>
+                      </div>
+                    }
+                  </div>
                   <p className='text-gray-400 text-sm mt-5'>{product.shortDescription}</p>
                   <div className='flex items-center gap-2 mt-5'>
                     <div className='flex items-centar gap-2'>
@@ -136,7 +145,16 @@ const Detail = () => {
                     <p className='text-gray-500 text-sm'>(120 Reviews)</p>
                   </div>
                   <div className='mt-8 flex items-center justify-between'>
-                    <p className='text-2xl font-medium'>{currencyFormatter(product.price as number)},00</p>
+                    {
+                      product.discount! > 0
+                      ? (
+                        <div className=''>
+                          <p className='line-through text-gray-300 mb-2'>{currencyFormatter(product.price as number)},00</p>
+                          <p className='text-2xl font-semibold'>{currencyFormatter(product.price! - ((product.discount! * product.price!) / 100))},00</p>
+                        </div>
+                      )
+                      : <p className='text-2xl font-medium'>{currencyFormatter(product.price as number)},00</p>
+                    }
                     <div className='flex gap-3'>
                       {
                         product.colors?.map((item, idx) => (

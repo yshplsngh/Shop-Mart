@@ -68,3 +68,7 @@ export interface IProductDiscount extends IGeneralField {
   endDate: Date
   active: number
 }
+
+export interface IOwnerPick extends IGeneralField {
+  product: ObjectId
+}

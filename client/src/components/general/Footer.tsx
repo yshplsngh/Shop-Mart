@@ -11,7 +11,7 @@ const Footer = () => {
       <div className='flex lg:flex-row flex-col lg:gap-16 gap-10'>
         <div className='flex-1'>
           <Link to='/' className='flex items-center gap-5 text-white'>
-            <Logo size='md' />
+            <Logo size='md' color='white' />
             <p className='text-lg font-semibold'>{APP_NAME}</p>
           </Link>
           <p className='text-gray-300 text-sm leading-loose mt-6'>Experience the Great Outdoors in Style with {APP_NAME}'s. Shop now and gear up for adventure in {APP_NAME}!</p>

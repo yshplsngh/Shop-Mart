@@ -29,13 +29,13 @@ const Overview: React.FC<IProps> = ({ images }) => {
     <>
       <div className='mt-10 lg:grid hidden grid-cols-3 gap-8 h-[500px]'>
         <div className='w-full h-full rounded-lg'>
-          <img style={{ objectPosition: '50% 20%' }} src={images![0]} alt={`${APP_NAME} Product Name`} className='w-full h-full rounded-lg object-cover border border-gray-300 pointer-events-none' />
+          <img style={{ objectPosition: '50% 20%' }} src={images![0]} alt={`${APP_NAME} Product Name`} className='w-full h-[500px] rounded-lg object-cover border border-gray-300 pointer-events-none' />
         </div>
         <div className='w-full h-full rounded-lg'>
-          <img style={{ objectPosition: '50% 20%' }} src={images![1]} alt={`${APP_NAME} Product Name`} className='w-full h-full rounded-lg object-cover border border-gray-300 pointer-events-none' />
+          <img style={{ objectPosition: '50% 20%' }} src={images![1]} alt={`${APP_NAME} Product Name`} className='w-full h-[500px] rounded-lg object-cover border border-gray-300 pointer-events-none' />
         </div>
         <div className='w-full h-full rounded-lg'>
-          <img style={{ objectPosition: '50% 20%' }} src={images![2]} alt={`${APP_NAME} Product Name`} className='w-full h-full rounded-lg object-cover border border-gray-300 pointer-events-none' />
+          <img style={{ objectPosition: '50% 20%' }} src={images![2]} alt={`${APP_NAME} Product Name`} className='w-full h-[500px] rounded-lg object-cover border border-gray-300 pointer-events-none' />
         </div>
       </div>
 

@@ -22,6 +22,7 @@ app.use('/user', routes.user)
 app.use('/category', routes.category)
 app.use('/product', routes.product)
 app.use('/productDiscount', routes.productDiscount)
+app.use('/ownerPick', routes.ownerPick)
 
 connectDB()
 

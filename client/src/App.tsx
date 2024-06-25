@@ -12,6 +12,7 @@ import ProductDiscount from './pages/admin/ProductDiscount'
 import Alert from './components/general/Alert'
 import useStore from './store/store'
 import Dashboard from './pages/admin/Dashboard'
+import OwnerPick from './pages/admin/OwnerPick'
 
 const App = () => {
   const { refreshToken } = useStore()
@@ -33,6 +34,7 @@ const App = () => {
           <Route path='/admin/product' element={<Product />} />
           <Route path='/admin/category' element={<Category />} />
           <Route path='/admin/product-discount' element={<ProductDiscount />} />
+          <Route path='/admin/owners-pick' element={<OwnerPick />} />
           <Route path='/products/:slug' element={<Detail />} />
         </Routes>
       </Router>

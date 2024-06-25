@@ -14,27 +14,27 @@ const Products = () => {
   const [products, setProducts] = useState<IProduct[]>([])
   const [totalData, setTotalData] = useState(0)
   const [totalPage, setTotalPage] = useState(0)
-  const [selectedCategory, setSelectedCategory] = useState('')
   const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate()
   const { search } = useLocation()
   const searchParams = new URLSearchParams(search)
   const page = Number(searchParams.get('page')) || 1
+  const category = searchParams.get('category') || ''
   const limit = 6
 
   const handleChangePage = (type: string) => {
     if (type === 'previous') {
       if (page > 1) {
-        navigate(`/products?page=${page - 1}`)
+        navigate(`/products?page=${page - 1}&category=${category}`)
       } else {
-        navigate('/products')
+        navigate(`/products?page=${page}&category=${category}`)
       }
     } else if (type === 'next') {
       if (page === totalPage) {
-        navigate(`/products?page=${totalPage}`)
+        navigate(`/products?page=${totalPage}&category=${category}`)
       } else {
-        navigate(`/products?page=${page + 1}`)
+        navigate(`/products?page=${page + 1}&category=${category}`)
       }
     }
   }
@@ -51,8 +51,8 @@ const Products = () => {
       setTotalPage(res.data.totalPage)
     }
 
-    fetchProducts(page, selectedCategory)
-  }, [page, limit, selectedCategory])
+    fetchProducts(page, category)
+  }, [page, limit, category])
 
   useEffect(() => {
     const fetchCategories = async() => {
@@ -76,12 +76,12 @@ const Products = () => {
         {/* filter */}
         <div className='mt-12'>
           <div className='flex items-center justify-center gap-3 flex-wrap'>
-            <div onClick={() => setSelectedCategory('')} className={`rounded-full px-5 py-2 ${selectedCategory === '' ? 'bg-black text-white' : 'bg-gray-100 hover:bg-black text-gray-500 hover:text-white'} transition cursor-pointer`}>
+            <div onClick={() => navigate(`/products?page=${1}`)} className={`rounded-full px-5 py-2 ${category === '' ? 'bg-black text-white' : 'bg-gray-100 hover:bg-black text-gray-500 hover:text-white'} transition cursor-pointer`}>
               <p className='text-sm'>All</p>
             </div>
             {
               categories.map(item => (
-                <div key={item._id} onClick={() => setSelectedCategory(item._id)} className={`rounded-full px-5 py-2 ${item._id === selectedCategory ? 'bg-black text-white' : 'bg-gray-100 hover:bg-black text-gray-500 hover:text-white'} transition cursor-pointer`}>
+                <div key={item._id} onClick={() => navigate(`/products?page=${1}&category=${item._id}`)} className={`rounded-full px-5 py-2 ${item._id === category ? 'bg-black text-white' : 'bg-gray-100 hover:bg-black text-gray-500 hover:text-white'} transition cursor-pointer`}>
                   <p className='text-sm'>{item.name}</p>
                 </div>
               ))
@@ -115,6 +115,7 @@ const Products = () => {
                         name={item.name}
                         price={item.price}
                         image={item.images[0]}
+                        discount={item.discount}
                       />
                     ))
                   }

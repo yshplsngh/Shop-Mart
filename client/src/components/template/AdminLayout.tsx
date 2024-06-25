@@ -6,6 +6,7 @@ import HeadInfo from './../../utils/HeadInfo'
 import { ReactNode } from 'react'
 import { RiDashboard3Fill } from 'react-icons/ri'
 import useStore from './../../store/store'
+import { PiCursorFill } from 'react-icons/pi'
 
 interface IProps {
   title: string
@@ -46,6 +47,10 @@ const AdminLayout: React.FC<IProps> = ({ title, children }) => {
               <Link to='/admin/product-discount' className={`${pathname === '/admin/product-discount' ? 'bg-gray-900 text-white before:content-[""] before:absolute before:top-0 before:left-0 before:w-1 before:h-full before:bg-gray-600' : 'hover:bg-gray-900 hover:text-white hover:before:content-[""] hover:before:absolute hover:before:top-0 hover:before:left-0 hover:before:w-1 hover:before:h-full hover:before:bg-gray-600 transition'} flex items-center gap-3 px-5 py-4 outline-none relative`}>
                 <MdDiscount />
                 <p>Product Discount</p>
+              </Link>
+              <Link to='/admin/owners-pick' className={`${pathname === '/admin/owners-pick' ? 'bg-gray-900 text-white before:content-[""] before:absolute before:top-0 before:left-0 before:w-1 before:h-full before:bg-gray-600' : 'hover:bg-gray-900 hover:text-white hover:before:content-[""] hover:before:absolute hover:before:top-0 hover:before:left-0 hover:before:w-1 hover:before:h-full hover:before:bg-gray-600 transition'} flex items-center gap-3 px-5 py-4 outline-none relative`}>
+                <PiCursorFill />
+                <p>Owner's Pick</p>
               </Link>
             </div>
           </div>
