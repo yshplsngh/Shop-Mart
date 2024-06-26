@@ -240,6 +240,7 @@ const Detail = () => {
                             image={item.images[0]}
                             name={item.name}
                             price={item.price}
+                            discount={item.discount}
                           />
                         ))
                       }

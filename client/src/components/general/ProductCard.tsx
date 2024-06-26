@@ -9,7 +9,7 @@ interface IProps {
   name: string
   price: number
   image: string
-  discount?: number
+  discount: number
 }
 
 const ProductCard: React.FC<IProps> = ({ id, name, price, image, discount }) => {

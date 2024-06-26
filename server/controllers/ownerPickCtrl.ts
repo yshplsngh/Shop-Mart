@@ -34,8 +34,86 @@ const ownerPickCtrl = {
   },
   read: async(req: Request, res: Response) => {
     try {
-      const ownerPick = await OwnerPick.find().sort('-createdAt').populate('product')
-      return res.status(200).json({ ownerPick })
+      const ownerPickAggregation = await OwnerPick.aggregate([
+        {
+          $facet: {
+            data: [
+              {
+                $lookup: {
+                  'from': 'products',
+                  'localField': 'product',
+                  'foreignField': '_id',
+                  'as': 'product'
+                }
+              },
+              { $unwind: '$product' },
+              {
+                $lookup: {
+                  'from': 'productdiscounts',
+                  'localField': 'product._id',
+                  'foreignField': 'product',
+                  'as': 'discount'
+                }
+              },
+              {
+                $unwind: {
+                  path: '$discount',
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $match: {
+                  $or: [
+                    { 'discount.active': 0 },
+                    { 'discount.active': 1 },
+                    { 'discount.active': -1 },
+                    { 'discount': {$exists: false} }
+                  ]
+                }
+              },
+              {
+                $group: {
+                  _id: '$_id',
+                  product: {
+                    $first: {
+                      _id: '$product._id',
+                      name: '$product.name',
+                      shortDescription: '$product.shortDescription',
+                      longDescription: '$product.longDescription',
+                      price: '$product.price',
+                      weight: '$product.weight',
+                      width: '$product.width',
+                      length: '$product.length',
+                      height: '$product.height',
+                      category: '$product.category',
+                      colors: '$product.colors',
+                      images: '$product.images',
+                      sizeChart: '$product.sizeChart',
+                      discount: {
+                        $max: {
+                          $cond: {
+                            if: { $eq: ['$discount.active', 1] },
+                            then: '$discount.percentage',
+                            else: 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              { $sort: { createdAt: -1 } }
+            ]
+          }
+        },
+        {
+          $project: {
+            data: 1
+          }
+        }
+      ])
+      // const ownerPick = await OwnerPick.find().sort('-createdAt').populate('product')
+      return res.status(200).json({ ownerPick: ownerPickAggregation[0].data })
     } catch (err: any) {
       return res.status(500).json({ msg: err.message })
     }

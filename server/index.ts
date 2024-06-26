@@ -25,5 +25,6 @@ app.use('/productDiscount', routes.productDiscount)
 app.use('/ownerPick', routes.ownerPick)
 
 connectDB()
+require('./scheduler/discountScheduler')
 
 app.listen(process.env.PORT, () => console.log(`Server is running on PORT ${process.env.PORT}`))

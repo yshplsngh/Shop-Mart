@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { AiOutlineClose, AiOutlineSearch } from 'react-icons/ai'
-import { FaBagShopping, FaUser } from 'react-icons/fa6'
+import { FaBagShopping, FaHeart, FaUser } from 'react-icons/fa6'
 import { RxHamburgerMenu } from 'react-icons/rx'
 import { APP_NAME } from './../../utils/constant'
 import useStore from './../../store/store'
@@ -98,6 +98,12 @@ const Navbar = () => {
               </div>
               <p className='md:block hidden'>Search</p>
             </div>
+            <Link to='/' className='flex items-center gap-3'>
+              <div className='rounded-full p-2 bg-gray-800 text-white flex items-center justify-center'>
+                <FaHeart className='text-xs' />
+              </div>
+              <p className='md:block hidden'>Wishlist (0)</p>
+            </Link>
             <Link to='/' className='flex items-center gap-3'>
               <div className='rounded-full p-2 bg-gray-800 text-white flex items-center justify-center'>
                 <FaBagShopping className='text-xs' />

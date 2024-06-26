@@ -167,6 +167,7 @@ const productCtrl = {
             colors: { $first: '$colors' },
             images: { $first: '$images' },
             sizeChart: { $first: '$sizeChart' },
+            createdAt: { $first: '$createdAt' },
             discount: {
               $max: {
                 $cond: {
@@ -249,7 +250,7 @@ const productCtrl = {
   readById: async(req: Request, res: Response) =>{ 
     try {
       const { id } = req.params
-      const product = await Product.findOne({ _id: id })
+      const product = await Product.findOne({ _id: id }).populate('category')
       const discount = await ProductDiscount.findOne({ product: id, active: 1 })
 
       return res.status(200).json({
@@ -409,12 +410,78 @@ const productCtrl = {
   similarProduct: async(req: Request, res: Response) => {
     const { id } = req.params
 
-    const product = await Product.findById(id)
+    const product = await Product.findById(id).limit(4)
     if (!product)
       return res.status(404).json({ msg: `Product with ID ${id} not found.` })
 
-    const similarProducts = await Product.find({ category: product.category, _id: { $ne: id } }).limit(4)
-    return res.status(200).json({ similarProducts })
+    const similarProductsAggregation = await Product.aggregate([
+      {
+        $facet: {
+          data: [
+            { $match: { category: product.category, _id: { $ne: new mongoose.Types.ObjectId(id) } } },
+            {
+              $lookup: {
+                'from': 'productdiscounts',
+                'localField': '_id',
+                'foreignField': 'product',
+                'as': 'discount'
+              }
+            },
+            {
+              $unwind: {
+                path: '$discount',
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              $match: {
+                $or: [
+                  { 'discount.active': 0 },
+                  { 'discount.active': 1 },
+                  { 'discount.active': -1 },
+                  { 'discount': { $exists: false } }
+                ]
+              }
+            },
+            {
+              $group: {
+                _id: '$_id',
+                name: { $first: '$name' },
+                shortDescription: { $first: '$shortDescription' },
+                longDescription: { $first: '$longDescription' },
+                price: { $first: '$price' },
+                weight: { $first: '$weight' },
+                width: { $first: '$width' },
+                length: { $first: '$length' },
+                height: { $first: '$height' },
+                category: { $first: '$category' },
+                colors: { $first: '$colors' },
+                images: { $first: '$images' },
+                sizeChart: { $first: '$sizeChart' },
+                createdAt: { $first: '$createdAt' },
+                discount: {
+                  $max: {
+                    $cond: {
+                      if: { $eq: ['$discount.active', 1] },
+                      then: '$discount.percentage',
+                      else: 0
+                    }
+                  }
+                }
+              }
+            },
+            { $limit: 4}
+          ]
+        }
+      },
+      {
+        $project: {
+          data: 1
+        }
+      }
+    ])
+
+    return res.status(200).json({ similarProducts: similarProductsAggregation[0].data })
   }
 }
 
