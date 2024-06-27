@@ -116,6 +116,10 @@ const Products = () => {
                         price={item.price}
                         image={item.images[0]}
                         discount={item.discount}
+                        shortDescription={item.shortDescription}
+                        colors={item.colors}
+                        longDescription={item.longDescription}
+                        product={item}
                       />
                     ))
                   }

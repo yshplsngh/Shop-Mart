@@ -56,6 +56,10 @@ const Home = () => {
                 name={item.product.name}
                 price={item.product.price}
                 discount={item.product.discount}
+                shortDescription={item.product.shortDescription}
+                colors={item.product.colors}
+                longDescription={item.product.longDescription}
+                product={item.product}
               />
             ))
           }

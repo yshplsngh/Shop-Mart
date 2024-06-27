@@ -15,11 +15,12 @@ import Dashboard from './pages/admin/Dashboard'
 import OwnerPick from './pages/admin/OwnerPick'
 
 const App = () => {
-  const { refreshToken } = useStore()
+  const { refreshToken, readCart } = useStore()
 
   useEffect(() => {
     refreshToken()
-  }, [refreshToken])
+    readCart()
+  }, [refreshToken, readCart])
 
   return (
     <>

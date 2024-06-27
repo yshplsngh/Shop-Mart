@@ -13,6 +13,7 @@ import { currencyFormatter } from '../../utils/currency';
 import Loader from '../../components/general/Loader';
 import Overview from '../../components/productDetail/Overview';
 import SizeChart from '../../components/productDetail/SizeChart';
+import useStore from './../../store/store'
 
 const Detail = () => {
   const [loading, setLoading] = useState(false)
@@ -26,6 +27,8 @@ const Detail = () => {
   const [tab, setTab] = useState('overview')
   
   const { slug } = useParams()
+
+  const { createCart } = useStore()
 
   const handleSelectSize = (size: object) => {
     // @ts-ignore
@@ -63,9 +66,19 @@ const Detail = () => {
   }
 
   const handleAddToCart = () => {
-    console.log(selectedColor)
-    console.log(selectedSize)
-    console.log(qty)
+    // @ts-ignore
+    const findStock = (selectedColor as IProductColor).sizes.find(item => item.size === selectedSize.size)
+
+    createCart({
+      product: product as IProduct,
+      qty,
+      // @ts-ignore
+      size: selectedSize.size,
+      color: selectedColor as IProductColor,
+      discount: (product as IProduct).discount,
+      stock: findStock?.stock as number,
+      selected: true
+    })
   }
 
   useEffect(() => {
@@ -241,6 +254,10 @@ const Detail = () => {
                             name={item.name}
                             price={item.price}
                             discount={item.discount}
+                            shortDescription={item.shortDescription}
+                            colors={item.colors}
+                            longDescription={item.longDescription}
+                            product={item}
                           />
                         ))
                       }
