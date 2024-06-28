@@ -25,7 +25,7 @@ const AddToCart: React.FC<IProps> = ({ openAddToCartModal, setOpenAddToCartModal
   const [selectedSize, setSelectedSize] = useState({})
   const [qty, setQty] = useState(1)
 
-  const { createCart } = useStore()
+  const { userState, createCart } = useStore()
 
   const handleSelectColor = (color: IProductColor) => {
     setSelectedColor(color)
@@ -66,16 +66,29 @@ const AddToCart: React.FC<IProps> = ({ openAddToCartModal, setOpenAddToCartModal
     // @ts-ignore 
     const findStock = (selectedColor as IProductColor).sizes.find(item => item.size === selectedSize.size)
 
-    createCart({
-      product,
-      qty,
-      // @ts-ignore
-      size: selectedSize.size,
-      color: selectedColor as IProductColor,
-      discount: product.discount,
-      stock: findStock?.stock as number,
-      selected: true
-    })
+    if (userState.data.accessToken) {
+      createCart({
+        product,
+        qty,
+        // @ts-ignore
+        size: selectedSize.size,
+        color: selectedColor as IProductColor,
+        discount: product.discount,
+        stock: findStock?.stock as number,
+        selected: true
+      }, userState.data.accessToken)
+    } else {
+      createCart({
+        product,
+        qty,
+        // @ts-ignore
+        size: selectedSize.size,
+        color: selectedColor as IProductColor,
+        discount: product.discount,
+        stock: findStock?.stock as number,
+        selected: true
+      })
+    }
     
     setOpenAddToCartModal(false)
   }

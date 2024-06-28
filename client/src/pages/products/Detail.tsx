@@ -28,7 +28,7 @@ const Detail = () => {
   
   const { slug } = useParams()
 
-  const { createCart } = useStore()
+  const { userState, createCart } = useStore()
 
   const handleSelectSize = (size: object) => {
     // @ts-ignore
@@ -69,16 +69,29 @@ const Detail = () => {
     // @ts-ignore
     const findStock = (selectedColor as IProductColor).sizes.find(item => item.size === selectedSize.size)
 
-    createCart({
-      product: product as IProduct,
-      qty,
-      // @ts-ignore
-      size: selectedSize.size,
-      color: selectedColor as IProductColor,
-      discount: (product as IProduct).discount,
-      stock: findStock?.stock as number,
-      selected: true
-    })
+    if (userState.data.accessToken) {
+      createCart({
+        product: product as IProduct,
+        qty,
+        // @ts-ignore
+        size: selectedSize.size,
+        color: selectedColor as IProductColor,
+        discount: (product as IProduct).discount,
+        stock: findStock?.stock as number,
+        selected: true
+      }, userState.data.accessToken)
+    } else {
+      createCart({
+        product: product as IProduct,
+        qty,
+        // @ts-ignore
+        size: selectedSize.size,
+        color: selectedColor as IProductColor,
+        discount: (product as IProduct).discount,
+        stock: findStock?.stock as number,
+        selected: true
+      })
+    }
   }
 
   useEffect(() => {

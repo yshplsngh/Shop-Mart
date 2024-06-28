@@ -6,15 +6,23 @@ import CartItem from '../components/cart/CartItem'
 import { currencyFormatter } from "../utils/currency"
 
 const Cart = () => {
-  const { cartState, bulkUpdateCartSelectedStatus } = useStore()
+  const { userState, cartState, bulkUpdateCartSelectedStatus } = useStore()
 
   const handleClickCheckbox = () => {
     const isEveryItemChecked = cartState.data.every(item => item.selected)
 
     if (isEveryItemChecked) {
-      bulkUpdateCartSelectedStatus(false)
+      if (userState.data.accessToken) {
+        bulkUpdateCartSelectedStatus(false, userState.data.accessToken)
+      } else {
+        bulkUpdateCartSelectedStatus(false)
+      }
     } else {
-      bulkUpdateCartSelectedStatus(true)
+      if (userState.data.accessToken) {
+        bulkUpdateCartSelectedStatus(true, userState.data.accessToken)
+      } else {
+        bulkUpdateCartSelectedStatus(true)
+      }
     }
   }
 
@@ -60,7 +68,7 @@ const Cart = () => {
               <hr className='my-7' />
               <div className='flex items-center justify-between'>
                 <p className='font-semibold'>Subtotal</p>
-                <p className='font-semibold'>{currencyFormatter(cartState.data.reduce((acc, item) => (item.selected ? ((item.product.price - ((item.product.discount * item.product.price) / 100)) * item.qty) : 0) + acc, 0))},00</p>
+                <p className='font-semibold'>{currencyFormatter(cartState.data.reduce((acc, item) => (item.selected ? ((item.product.price - ((item.discount * item.product.price) / 100)) * item.qty) : 0) + acc, 0))},00</p>
               </div>
               <div className='flex justify-end mt-8'>
                 <button disabled={cartState.data.every(item => !item.selected)} className={`${cartState.data.every(item => !item.selected) ? 'bg-gray-300 hover:bg-gray-300 cursor-not-allowed' : 'bg-black hover:bg-gray-700 cursor-pointer'} text-white rounded-md px-7 py-2 transition`}>Checkout</button>

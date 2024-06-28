@@ -19,7 +19,7 @@ const CartItem: React.FC<IProps> = ({ item }) => {
 
   const deleteModalRef = useRef() as React.MutableRefObject<HTMLDivElement>
 
-  const { cartState, createCart, deleteCart, updateCartSelectedStatus } = useStore()
+  const { userState, cartState, createCart, deleteCart, updateCartSelectedStatus } = useStore()
 
   const handleChangeQty = (type: string) => {
     const color = product.colors!.find(currColor => currColor.hexCode === item.color.hexCode)
@@ -29,50 +29,95 @@ const CartItem: React.FC<IProps> = ({ item }) => {
       const newQty = item.qty - 1
 
       if (newQty > 0) {
-        createCart({
-          product: product as IProduct,
-          qty: newQty,
-          size: item.size,
-          color: item.color,
-          discount: product.discount as number,
-          stock: stock?.stock as number,
-          selected: true
-        })
+        if (userState.data.accessToken) {
+          createCart({
+            product: product as IProduct,
+            qty: newQty,
+            size: item.size,
+            color: item.color,
+            discount: product.discount as number,
+            stock: stock?.stock as number,
+            selected: true
+          }, userState.data.accessToken)
+        } else {
+          createCart({
+            product: product as IProduct,
+            qty: newQty,
+            size: item.size,
+            color: item.color,
+            discount: product.discount as number,
+            stock: stock?.stock as number,
+            selected: true
+          })
+        }
       }
     } else if (type === 'increase') {
       const newQty = item.qty + 1
 
       if (newQty > (stock?.stock as number)) {
-        createCart({
-          product: product as IProduct,
-          qty: stock?.stock as number,
-          size: item.size,
-          color: item.color,
-          discount: product.discount as number,
-          stock: stock?.stock as number,
-          selected: true
-        })
+        if (userState.data.accessToken) {
+          createCart({
+            product: product as IProduct,
+            qty: stock?.stock as number,
+            size: item.size,
+            color: item.color,
+            discount: product.discount as number,
+            stock: stock?.stock as number,
+            selected: true
+          }, userState.data.accessToken)
+        } else {
+          createCart({
+            product: product as IProduct,
+            qty: stock?.stock as number,
+            size: item.size,
+            color: item.color,
+            discount: product.discount as number,
+            stock: stock?.stock as number,
+            selected: true
+          })
+        }
       } else {
-        createCart({
-          product: product as IProduct,
-          qty: newQty,
-          size: item.size,
-          color: item.color,
-          discount: product.discount as number,
-          stock: stock?.stock as number,
-          selected: true
-        })
+        if (userState.data.accessToken) {
+          createCart({
+            product: product as IProduct,
+            qty: newQty,
+            size: item.size,
+            color: item.color,
+            discount: product.discount as number,
+            stock: stock?.stock as number,
+            selected: true
+          }, userState.data.accessToken)
+        } else {
+          createCart({
+            product: product as IProduct,
+            qty: newQty,
+            size: item.size,
+            color: item.color,
+            discount: product.discount as number,
+            stock: stock?.stock as number,
+            selected: true
+          })
+        }
       }
     }
   }
 
   const handleDeleteItem = () => {
-    deleteCart(item)
+    if (userState.data.accessToken) {
+      deleteCart(item, userState.data.accessToken)
+    } else {
+      deleteCart(item)
+    }
+    
     setOpenDeleteModal(false)
   }
 
   const handleClickCheckbox = () => {
-    updateCartSelectedStatus(item)
+    if (userState.data.accessToken) {
+      updateCartSelectedStatus(item, userState.data.accessToken)
+    } else {
+      updateCartSelectedStatus(item)
+    }
   }
 
   useEffect(() => {

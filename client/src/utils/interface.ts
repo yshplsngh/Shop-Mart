@@ -6,6 +6,7 @@ export type FormSubmitted = FormEvent<HTMLFormElement>
 
 export interface GlobalStoreState {
   alertState: IAlertState
+  bottomAlertState: IBottomAlertState
   userState: IUserState
   categoryState: ICategoryState
   productState: IProductState
@@ -21,6 +22,11 @@ export interface IGeneralField {
 
 export interface IAlertState {
   message: string
+  type: string
+}
+
+export interface IBottomAlertState {
+  entity: string
   type: string
 }
 

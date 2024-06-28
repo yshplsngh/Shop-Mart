@@ -72,3 +72,13 @@ export interface IProductDiscount extends IGeneralField {
 export interface IOwnerPick extends IGeneralField {
   product: ObjectId
 }
+
+export interface ICart extends IGeneralField {
+  user: ObjectId
+  product: ObjectId
+  qty: number
+  size: string
+  color: object
+  selected: boolean
+  discount: number
+}

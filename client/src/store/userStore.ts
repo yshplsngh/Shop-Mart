@@ -22,6 +22,16 @@ const userStore = (set: any) => {
       try {
         const res = await postDataAPI('/user/login', data)
 
+        const localStorageCart = JSON.parse(localStorage.getItem('ue_cart') || '[]')
+        
+        if (localStorageCart.length > 0) {
+          for (let i = 0; i < localStorageCart.length; i++) {
+            await postDataAPI('/cart', localStorageCart[i], res.data.accessToken)
+          }
+
+          localStorage.removeItem('ue_cart')
+        }
+
         set((state: GlobalStoreState) => {
           state.userState.data = {
             user: res.data.user,

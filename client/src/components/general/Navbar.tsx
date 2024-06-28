@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { AiOutlineClose, AiOutlineSearch } from 'react-icons/ai'
 import { FaBagShopping, FaHeart, FaUser } from 'react-icons/fa6'
 import { RxHamburgerMenu } from 'react-icons/rx'
@@ -9,22 +9,28 @@ import Logo from './Logo'
 import { MdLogout } from 'react-icons/md'
 import { RiDashboard3Fill } from 'react-icons/ri'
 import Search from '../modal/Navbar/Search'
+import Wishlist from '../modal/Navbar/Wishlist'
 
 const Navbar = () => {
   const [onScroll, setOnScroll] = useState(false)
   const [openSidebar, setOpenSidebar] = useState(false)
   const [openProfileDropdown, setOpenProfileDropdown] = useState(false)
   const [openSearchModal, setOpenSearchModal] = useState(false)
+  const [openWishlist, setOpenWishlist] = useState(false)
 
   const sidebarRef = useRef() as React.MutableRefObject<HTMLDivElement>
   const profileDropdownRef = useRef() as React.MutableRefObject<HTMLDivElement>
   const searchModalRef = useRef() as React.MutableRefObject<HTMLDivElement>
+  const wishlistRef = useRef() as React.MutableRefObject<HTMLDivElement>
+
+  const navigate = useNavigate()
   
   const { userState, cartState, logout } = useStore()
 
   const handleLogout = async() => {
     await logout()
     setOpenProfileDropdown(false)
+    navigate('/')
   }
 
   useEffect(() => {
@@ -74,6 +80,17 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', checkIfClickedOutside)
   }, [openSearchModal])
 
+  useEffect(() => {
+    const checkIfClickedOutside = (e: MouseEvent) => {
+      if (openWishlist && wishlistRef.current && !wishlistRef.current.contains(e.target as Node)) {
+        setOpenWishlist(false)
+      }
+    }
+    
+    document.addEventListener('mousedown', checkIfClickedOutside)
+    return () => document.removeEventListener('mousedown', checkIfClickedOutside)
+  }, [openWishlist])
+
   return (
     <>
       <div className={`flex md:px-12 px-6 py-4 gap-20 items-center justify-between sticky top-0 z-10 bg-white ${onScroll ? 'shadow-lg' : 'shadow-none'}`}>
@@ -98,12 +115,12 @@ const Navbar = () => {
               </div>
               <p className='md:block hidden'>Search</p>
             </div>
-            <Link to='/' className='flex items-center gap-3'>
+            <div onClick={() => setOpenWishlist(true)} className='flex items-center gap-3 cursor-pointer'>
               <div className='rounded-full p-2 bg-gray-800 text-white flex items-center justify-center'>
                 <FaHeart className='text-xs' />
               </div>
               <p className='md:block hidden'>Wishlist (0)</p>
-            </Link>
+            </div>
             <Link to='/cart' className='flex items-center gap-3'>
               <div className='rounded-full p-2 bg-gray-800 text-white flex items-center justify-center'>
                 <FaBagShopping className='text-xs' />
@@ -160,6 +177,12 @@ const Navbar = () => {
         openSearchModal={openSearchModal}
         setOpenSearchModal={setOpenProfileDropdown}
         searchModalRef={searchModalRef}
+      />
+
+      <Wishlist
+        openWishlist={openWishlist}
+        setOpenWishlist={setOpenWishlist}
+        wishlistRef={wishlistRef}
       />
     </>
   )

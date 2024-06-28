@@ -13,14 +13,20 @@ import Alert from './components/general/Alert'
 import useStore from './store/store'
 import Dashboard from './pages/admin/Dashboard'
 import OwnerPick from './pages/admin/OwnerPick'
+import BottomAlert from './components/general/BottomAlert'
 
 const App = () => {
-  const { refreshToken, readCart } = useStore()
+  const { userState, refreshToken, readCart } = useStore()
 
   useEffect(() => {
     refreshToken()
-    readCart()
-  }, [refreshToken, readCart])
+
+    if (userState.data.accessToken) {
+      readCart(userState.data.accessToken)
+    } else {
+      readCart()
+    }
+  }, [refreshToken, readCart, userState.data.accessToken])
 
   return (
     <>
@@ -40,6 +46,7 @@ const App = () => {
         </Routes>
       </Router>
       
+      <BottomAlert />
       <Alert />
     </>
   )

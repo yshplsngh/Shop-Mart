@@ -23,6 +23,7 @@ app.use('/category', routes.category)
 app.use('/product', routes.product)
 app.use('/productDiscount', routes.productDiscount)
 app.use('/ownerPick', routes.ownerPick)
+app.use('/cart', routes.cart)
 
 connectDB()
 require('./scheduler/discountScheduler')
