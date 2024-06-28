@@ -6,7 +6,7 @@ const Alert = () => {
   const { alertState, clear } = useStore()
 
   return (
-    <div className={`${alertState.type ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} fixed top-0 left-0 bottom-0 p-6 right-0 bg-[rgba(0,0,0,.6)] flex items-center justify-center transition-opacity`}>
+    <div className={`${alertState.type ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} fixed top-0 left-0 bottom-0 p-6 right-0 bg-[rgba(0,0,0,.6)] flex items-center justify-center transition-opacity z-10`}>
       <div className={`lg:w-1/3 md:w-2/3 w-full flex flex-col max-h-[90%] bg-white rounded-lg ${alertState.type ? 'translate-y-0' : '-translate-y-8'} transition-transform p-8 items-center justify-center`}>
         {
           alertState.type === 'error'

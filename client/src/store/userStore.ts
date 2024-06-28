@@ -23,6 +23,7 @@ const userStore = (set: any) => {
         const res = await postDataAPI('/user/login', data)
 
         const localStorageCart = JSON.parse(localStorage.getItem('ue_cart') || '[]')
+        const localStorageWishlist = JSON.parse(localStorage.getItem('ue_wishlist') || '[]')
         
         if (localStorageCart.length > 0) {
           for (let i = 0; i < localStorageCart.length; i++) {
@@ -30,6 +31,14 @@ const userStore = (set: any) => {
           }
 
           localStorage.removeItem('ue_cart')
+        }
+
+        if (localStorageWishlist.length > 0) {
+          for (let i = 0; i < localStorageWishlist.length; i++) {
+            await postDataAPI('/wishlist', { product: localStorageWishlist[i]._id }, res.data.accessToken)
+          }
+
+          localStorage.removeItem('ue_wishlist')
         }
 
         set((state: GlobalStoreState) => {

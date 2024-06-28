@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FaBagShopping } from 'react-icons/fa6'
-import { CiHeart } from 'react-icons/ci'
 import { currencyFormatter } from '../../utils/currency'
 import { APP_NAME } from '../../utils/constant'
 import AddToCart from '../modal/ProductCard/AddToCart'
 import { IProduct, IProductColor } from '../../utils/interface'
 import useStore from './../../store/store'
+import { RiHeartFill, RiHeartLine } from 'react-icons/ri'
 
 interface IProps {
   id: string
@@ -23,16 +23,25 @@ interface IProps {
 const ProductCard: React.FC<IProps> = ({ id, name, price, image, discount, shortDescription, colors, longDescription, product }) => {
   const [openAddToCartModal, setOpenAddToCartModal] = useState(false)
   const [itemOnCart, setItemOnCart] = useState(false)
+  const [itemOnWishlist, setItemOnWishlist] = useState(false)
 
   const addToCartModalRef = useRef() as React.MutableRefObject<HTMLDivElement>
 
   const navigate = useNavigate()
 
-  const { cartState } = useStore()
+  const { userState, cartState, wishlistState, createWishlist } = useStore()
 
   const handleClickProduct = () => {
     window.scrollTo(0, 0)
     navigate(`/products/${id}`)
+  }
+
+  const handleAddToWishlist = () => {
+    if (userState.data.accessToken) {
+      createWishlist(product, userState.data.accessToken)
+    } else {
+      createWishlist(product)
+    }
   }
 
   useEffect(() => {
@@ -54,6 +63,14 @@ const ProductCard: React.FC<IProps> = ({ id, name, price, image, discount, short
     }
   }, [cartState.data, id])
 
+  useEffect(() => {
+    if (wishlistState.data.find(item => item._id === id)) {
+      setItemOnWishlist(true)
+    } else {
+      setItemOnWishlist(false)
+    }
+  }, [wishlistState.data, id])
+
   return (
     <>
       <div className=''>
@@ -64,8 +81,12 @@ const ProductCard: React.FC<IProps> = ({ id, name, price, image, discount, short
               <p>{discount}% Off</p>
             </div>
           }
-          <div className='p-1 bg-white rounded-full w-fit text-2xl absolute top-4 right-5 cursor-pointer'>
-            <CiHeart />
+          <div onClick={handleAddToWishlist} className={`p-1 rounded-full w-fit text-xl absolute top-4 right-5 cursor-pointer ${itemOnWishlist ? 'bg-red-500 text-white' : 'bg-white text-black'}`}>
+            {
+              itemOnWishlist
+              ? <RiHeartFill />
+              : <RiHeartLine />
+            }
           </div>
           <div onClick={handleClickProduct} className='w-full h-full'>
             <img style={{ objectPosition: '50% 20%' }} src={image} alt={`${APP_NAME} - ${name}`} className='cursor-pointer w-full h-full object-cover pointer-events-none rounded-xl border border-gray-200' />

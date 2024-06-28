@@ -7,3 +7,8 @@ export const validPassword = (text: string) => {
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\-]).{8,}$/
   return passwordRegex.test(text)
 }
+
+export const validPhoneNumber = (text: string) => {
+  const phoneNumberPattern = /^8[1-9]\d{8,11}$/
+  return phoneNumberPattern.test(text)
+}

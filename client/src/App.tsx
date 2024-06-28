@@ -14,19 +14,22 @@ import useStore from './store/store'
 import Dashboard from './pages/admin/Dashboard'
 import OwnerPick from './pages/admin/OwnerPick'
 import BottomAlert from './components/general/BottomAlert'
+import Checkout from './pages/Checkout'
 
 const App = () => {
-  const { userState, refreshToken, readCart } = useStore()
+  const { userState, refreshToken, readCart, readWishlist } = useStore()
 
   useEffect(() => {
     refreshToken()
 
     if (userState.data.accessToken) {
       readCart(userState.data.accessToken)
+      readWishlist(userState.data.accessToken)      
     } else {
       readCart()
+      readWishlist()
     }
-  }, [refreshToken, readCart, userState.data.accessToken])
+  }, [refreshToken, readCart, readWishlist, userState.data.accessToken])
 
   return (
     <>
@@ -37,6 +40,7 @@ const App = () => {
           <Route path='/register' element={<SignUp />} />
           <Route path='/products' element={<Products />} />
           <Route path='/cart' element={<Cart />} />
+          <Route path='/checkout' element={<Checkout />} />
           <Route path='/admin' element={<Dashboard />} />
           <Route path='/admin/product' element={<Product />} />
           <Route path='/admin/category' element={<Category />} />

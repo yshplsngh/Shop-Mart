@@ -17,7 +17,7 @@ const BottomAlert = () => {
   }, [bottomAlertState.entity, clearBottomAlert])
 
   return (
-    <div className='fixed bottom-8 z-10 left-1/2 -translate-x-1/2'>
+    <div className='fixed bottom-8 z-10 left-1/2 -translate-x-1/2 md:w-auto w-full'>
       {
         bottomAlertState.type === 'success'
         ? (

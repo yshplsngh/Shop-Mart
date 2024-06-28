@@ -82,3 +82,37 @@ export interface ICart extends IGeneralField {
   selected: boolean
   discount: number
 }
+
+export interface IWishlist extends IGeneralField {
+  user: ObjectId
+  product: ObjectId
+}
+
+export interface ICheckoutItem {
+  product: ObjectId
+  size: string
+  color: string
+  qty: number
+  discount: number
+}
+
+export interface ICheckout extends IGeneralField {
+  user: ObjectId,
+  item: ICheckoutItem[]
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  address: string
+  province: string
+  city: string
+  district: string
+  postalCode: string
+  courier: string
+  service: string
+  subtotal: number
+  shippingCost: number
+  total: number
+  waybill: string
+  complete: boolean
+}

@@ -25,7 +25,7 @@ const Navbar = () => {
 
   const navigate = useNavigate()
   
-  const { userState, cartState, logout } = useStore()
+  const { userState, cartState, wishlistState, logout } = useStore()
 
   const handleLogout = async() => {
     await logout()
@@ -119,7 +119,7 @@ const Navbar = () => {
               <div className='rounded-full p-2 bg-gray-800 text-white flex items-center justify-center'>
                 <FaHeart className='text-xs' />
               </div>
-              <p className='md:block hidden'>Wishlist (0)</p>
+              <p className='md:block hidden'>Wishlist ({wishlistState.data.length})</p>
             </div>
             <Link to='/cart' className='flex items-center gap-3'>
               <div className='rounded-full p-2 bg-gray-800 text-white flex items-center justify-center'>

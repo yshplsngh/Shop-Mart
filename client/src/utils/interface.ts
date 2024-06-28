@@ -13,6 +13,7 @@ export interface GlobalStoreState {
   productDiscountState: IProductDiscountState
   ownerPickState: IOwnerPickState
   cartState: ICartState
+  wishlistState: IWishlistState
 }
 
 export interface IGeneralField {
@@ -135,5 +136,10 @@ export interface ICart {
 
 export interface ICartState {
   data: ICart[]
+  loading: boolean
+}
+
+export interface IWishlistState {
+  data: IProduct[]
   loading: boolean
 }

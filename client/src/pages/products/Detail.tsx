@@ -14,6 +14,7 @@ import Loader from '../../components/general/Loader';
 import Overview from '../../components/productDetail/Overview';
 import SizeChart from '../../components/productDetail/SizeChart';
 import useStore from './../../store/store'
+import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
 
 const Detail = () => {
   const [loading, setLoading] = useState(false)
@@ -23,12 +24,21 @@ const Detail = () => {
   const [qty, setQty] = useState(1)
   const [error, setError] = useState(false)
   const [similarProducts, setSimilarProducts] = useState<IProduct[]>([])
+  const [itemOnWishlist, setItemOnWishlist] = useState(false)
 
   const [tab, setTab] = useState('overview')
   
   const { slug } = useParams()
 
-  const { userState, createCart } = useStore()
+  const { userState, wishlistState, createCart, createWishlist } = useStore()
+  
+  const handleAddToWishlist = () => {
+    if (userState.data.accessToken) {
+      createWishlist(product as IProduct, userState.data.accessToken)
+    } else {
+      createWishlist(product as IProduct)
+    }
+  }
 
   const handleSelectSize = (size: object) => {
     // @ts-ignore
@@ -120,6 +130,14 @@ const Detail = () => {
 
     fetchSimilarProducts()
   }, [slug])
+
+  useEffect(() => {
+    if (wishlistState.data.find(item => item._id === product._id)) {
+      setItemOnWishlist(true)
+    } else {
+      setItemOnWishlist(false)
+    }
+  }, [wishlistState.data, product._id])
   
   return (
     <>
@@ -205,13 +223,22 @@ const Detail = () => {
                     </div>
                   </div>
                   <hr className='my-8' />
-                  <div className='flex gap-5'>
-                    <div className='flex items-center gap-5 bg-gray-100 rounded-md w-fit px-3 py-2'>
-                      <LuMinus onClick={() => handleChangeQty('decrease')} className={`${Object.keys(selectedSize).length > 0 ? 'cursor-pointer' : 'cursor-not-allowed text-gray-300'}`} />
-                      <p className={`px-3 ${Object.keys(selectedSize).length > 0 ? 'text-black' : 'text-gray-300'}`}>{qty}</p>
-                      <LuPlus onClick={() => handleChangeQty('increase')} className={`cursor-pointer ${Object.keys(selectedSize).length > 0 ? 'cursor-pointer' : 'cursor-not-allowed text-gray-300'}`} />
+                  <div className='flex items-center gap-5'>
+                    <div className='flex gap-5 flex-1'>
+                      <div className='flex items-center gap-5 bg-gray-100 rounded-md w-fit px-3 py-2'>
+                        <LuMinus onClick={() => handleChangeQty('decrease')} className={`${Object.keys(selectedSize).length > 0 ? 'cursor-pointer' : 'cursor-not-allowed text-gray-300'}`} />
+                        <p className={`px-3 ${Object.keys(selectedSize).length > 0 ? 'text-black' : 'text-gray-300'}`}>{qty}</p>
+                        <LuPlus onClick={() => handleChangeQty('increase')} className={`cursor-pointer ${Object.keys(selectedSize).length > 0 ? 'cursor-pointer' : 'cursor-not-allowed text-gray-300'}`} />
+                      </div>
+                      <button disabled={Object.keys(selectedSize).length < 1} onClick={handleAddToCart} className={`${Object.keys(selectedSize).length > 0 ? 'bg-black hover:bg-gray-700 cursor-pointer' : 'bg-gray-200 cursor-not-allowed'} transition text-white text-sm flex-1 rounded-md`}>Add to Cart</button>
                     </div>
-                    <button disabled={Object.keys(selectedSize).length < 1} onClick={handleAddToCart} className={`${Object.keys(selectedSize).length > 0 ? 'bg-black hover:bg-gray-700 cursor-pointer' : 'bg-gray-200 cursor-not-allowed'} transition text-white text-sm flex-1 rounded-md`}>Add to Cart</button>
+                    <div onClick={handleAddToWishlist} className={`p-1 rounded-full w-fit text-x cursor-pointer ${itemOnWishlist ? 'bg-red-500 text-white' : 'bg-white text-black border border-black'}`}>
+                      {
+                        itemOnWishlist
+                        ? <RiHeartFill />
+                        : <RiHeartLine />
+                      }
+                    </div>
                   </div>
                   <div className='mt-10'>
                     <p className='font-semibold'>Description</p>
