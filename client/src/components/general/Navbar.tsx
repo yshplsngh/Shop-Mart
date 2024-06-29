@@ -6,7 +6,7 @@ import { RxHamburgerMenu } from 'react-icons/rx'
 import { APP_NAME } from './../../utils/constant'
 import useStore from './../../store/store'
 import Logo from './Logo'
-import { MdLogout } from 'react-icons/md'
+import { MdLocalShipping, MdLogout } from 'react-icons/md'
 import { RiDashboard3Fill } from 'react-icons/ri'
 import Search from '../modal/Navbar/Search'
 import Wishlist from '../modal/Navbar/Wishlist'
@@ -171,6 +171,10 @@ const Navbar = () => {
                         <Link to='/profile' className='flex items-center gap-3 px-4 py-3 hover:bg-gray-100 transition rounded-t-md border-b border-gray-300'>
                           <FaUser />
                           <p>Profile</p>
+                        </Link>
+                        <Link to='/order-history' className='flex items-center gap-3 px-4 py-3 hover:bg-gray-100 transition border-b border-gray-300'>
+                          <MdLocalShipping />
+                          <p>Order History</p>
                         </Link>
                         <Link to='/change-password' className='flex items-center gap-3 px-4 py-3 hover:bg-gray-100 transition border-b border-gray-300'>
                           <IoKeySharp />

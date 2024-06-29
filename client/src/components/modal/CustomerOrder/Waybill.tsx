@@ -1,27 +1,41 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { AiOutlineClose } from 'react-icons/ai'
-import { FormSubmitted } from './../../../utils/interface'
+import { FormSubmitted, ICheckout } from './../../../utils/interface'
+import useStore from './../../../store/store'
 
 interface IProps {
   openWaybillModal: boolean
   setOpenWaybillModal: React.Dispatch<React.SetStateAction<boolean>>
   waybillModalRef: React.MutableRefObject<HTMLDivElement>
+  selectedCustomerOrder: ICheckout
 }
 
-const Waybill: React.FC<IProps> = ({ openWaybillModal, setOpenWaybillModal, waybillModalRef }) => {
+const Waybill: React.FC<IProps> = ({ openWaybillModal, setOpenWaybillModal, waybillModalRef, selectedCustomerOrder }) => {
   const [loading, setLoading] = useState(false)
   const [waybill, setWaybill] = useState('')
+
+  const { userState, updateWaybill, readCustomerOrder } = useStore()
 
   const handleClickClose = () => {
     setOpenWaybillModal(false)
   }
 
-  const handleSubmit = (e: FormSubmitted) => {
+  const handleSubmit = async(e: FormSubmitted) => {
     e.preventDefault()
     setLoading(true)
-
+    await updateWaybill(selectedCustomerOrder._id, waybill, userState.data.accessToken!)
+    setOpenWaybillModal(false)
+    readCustomerOrder(userState.data.accessToken!, 1, 9, 'onProcess')
     setLoading(false)
   }
+
+  useEffect(() => {
+    if (Object.keys(selectedCustomerOrder).length > 0) {
+      setWaybill(selectedCustomerOrder.waybill)
+    } else {
+      setWaybill('')
+    }
+  }, [selectedCustomerOrder])
 
   return (
     <div className={`${openWaybillModal ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} fixed top-0 left-0 bottom-0 right-0 bg-[rgba(0,0,0,.6)] flex items-center justify-center transition-opacity`}>

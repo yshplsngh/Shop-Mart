@@ -8,10 +8,12 @@ const userSchema = new mongoose.Schema<IUser>({
     trim: true
   },
   avatar: {
-    type: String
+    type: String,
+    default: ''
   },
   gender: {
-    type: String
+    type: String,
+    default: ''
   },
   email: {
     type: String,
@@ -22,7 +24,8 @@ const userSchema = new mongoose.Schema<IUser>({
   handphoneNo: {
     type: String,
     trim: true,
-    unique: true
+    unique: true,
+    default: ''
   },
   password: {
     type: String,

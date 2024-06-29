@@ -18,6 +18,7 @@ import Checkout from './pages/Checkout'
 import Profile from './pages/Profile'
 import ChangePassword from './pages/ChangePassword'
 import Order from './pages/admin/Order'
+import OrderHistory from './pages/OrderHistory'
 
 const App = () => {
   const { userState, refreshToken, readCart, readWishlist } = useStore()
@@ -46,6 +47,7 @@ const App = () => {
           <Route path='/checkout' element={<Checkout />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/change-password' element={<ChangePassword />} />
+          <Route path='/order-history' element={<OrderHistory />} />
           <Route path='/admin' element={<Dashboard />} />
           <Route path='/admin/product' element={<Product />} />
           <Route path='/admin/category' element={<Category />} />

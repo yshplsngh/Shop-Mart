@@ -14,6 +14,7 @@ export interface GlobalStoreState {
   ownerPickState: IOwnerPickState
   cartState: ICartState
   wishlistState: IWishlistState
+  customerOrderState: ICheckoutState
 }
 
 export interface IGeneralField {
@@ -145,4 +146,50 @@ export interface ICartState {
 export interface IWishlistState {
   data: IProduct[]
   loading: boolean
+}
+
+export interface ICheckoutUser {
+  _id: string
+  name: string
+}
+
+export interface ICheckoutItem {
+  name: string
+  images: string[]
+  price: number
+  size: string
+  color: string
+  qty: number
+  discount: number
+}
+
+export interface ICheckout extends IGeneralField {
+  xenditId: string
+  user: ICheckoutUser
+  item: ICheckoutItem[]
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  address: string
+  province: string
+  city: string
+  district: string
+  postalCode: string
+  courier: string
+  service: string
+  subtotal: number
+  shippingCost: number
+  total: number
+  paymentStatus: string
+  paymentMethod: string
+  waybill: string
+  complete: boolean
+}
+
+export interface ICheckoutState {
+  data: ICheckout[]
+  loading: boolean
+  totalPage: number
+  totalData: number
 }
