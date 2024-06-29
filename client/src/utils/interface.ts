@@ -44,8 +44,11 @@ export interface IUser {
   handphoneNo: string
   password: string
   role: string
-  isValidEmail: number
-  isValidPhone: number
+  province: string
+  city: string
+  district: string
+  postalCode: string
+  address: string
 }
 
 export interface ILoginResponse {

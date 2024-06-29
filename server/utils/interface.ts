@@ -20,8 +20,11 @@ export interface IUser extends IGeneralField {
   handphoneNo: string
   password: string
   role: string
-  isValidEmail: number
-  isValidPhone: number
+  province: string
+  city: string
+  district: string
+  postalCode: string
+  address: string
 }
 
 export interface IReqUser extends Request {
@@ -115,4 +118,7 @@ export interface ICheckout extends IGeneralField {
   total: number
   waybill: string
   complete: boolean
+  xenditId: string
+  paymentStatus: string
+  paymentMethod: string
 }

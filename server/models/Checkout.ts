@@ -2,6 +2,10 @@ import mongoose from 'mongoose'
 import { ICheckout } from './../utils/interface'
 
 const checkoutSchema = new mongoose.Schema<ICheckout>({
+  xenditId: {
+    type: String,
+    required: true
+  },
   user: {
     type: mongoose.Types.ObjectId,
     ref: 'user'
@@ -83,6 +87,14 @@ const checkoutSchema = new mongoose.Schema<ICheckout>({
   },
   total: {
     type: Number,
+    required: true
+  },
+  paymentStatus: {
+    type: String,
+    default: 'PENDING'
+  },
+  paymentMethod: {
+    type: String,
     required: true
   },
   waybill: {

@@ -1,10 +1,10 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import User from '../models/User'
-import { validEmail, validPassword } from '../utils/validator'
+import { validEmail, validPassword, validPhoneNumber } from '../utils/validator'
 import { generateToken } from '../utils/generateToken'
 import jwt, { decode } from 'jsonwebtoken'
-import { IDecodedToken } from '../utils/interface'
+import { IDecodedToken, IReqUser } from '../utils/interface'
 
 const userCtrl = {
   register: async(req: Request, res: Response) => {
@@ -122,6 +122,90 @@ const userCtrl = {
           password: ''
         }
       })
+    } catch (err: any) {
+      return res.status(500).json({ msg: err.message })
+    }
+  },
+  update: async(req: IReqUser, res: Response) => {
+    try {
+      const {
+        name,
+        handphoneNo,
+        gender,
+        province,
+        city,
+        district,
+        postalCode,
+        address,
+        avatar
+      } = req.body
+
+      if (!name)
+        return res.status(400).json({ msg: 'Please provide your name.' })
+
+      if (handphoneNo) {
+        if (!validPhoneNumber(handphoneNo))
+          return res.status(400).json({ msg: 'Pleae provide valid phone number.' })
+      }
+
+      const user = await User.findById(req.user?._id)
+      if (!user)
+        return res.status(404).json({ msg: `User with ID ${req.user?._id} not found.` })
+
+      await User.findByIdAndUpdate(req.user?._id, {
+        name,
+        handphoneNo,
+        gender,
+        province,
+        city,
+        district,
+        postalCode,
+        address,
+        avatar
+      })
+
+      return res.status(200).json({
+        msg: 'Profile has been updated successfully.',
+        user: {
+          ...user._doc,
+          name,
+          handphoneNo,
+          gender,
+          province,
+          city,
+          district,
+          postalCode,
+          address,
+          avatar
+        }
+      })
+    } catch (err: any) {
+      return res.status(500).json({ msg: err.message })
+    }
+  },
+  changePassword: async(req: IReqUser, res: Response) => {
+    try {
+      const { currentPassword, newPassword } = req.body
+
+      if (!currentPassword || !newPassword)
+        return res.status(400).json({ msg: 'Please provide current password and new password.' })
+
+      if (newPassword.length < 8)
+        return res.status(400).json({ msg: 'Password should be at least 8 characters.' })
+      else if (!validPassword(newPassword))
+        return res.status(400).json({ msg: 'Password should be combination of lowercase, uppercase, number, and symbol.' })
+
+      const user = await User.findById(req.user?._id)
+
+      const currentPasswordChecked = await bcrypt.compare(currentPassword, user?.password!)
+      if (!currentPasswordChecked)
+        return res.status(400).json({ msg: 'Current password is incorrect.' })
+
+      const newPasswordHash = await bcrypt.hash(newPassword, 12)
+      
+      await User.findByIdAndUpdate(req.user?._id, { password: newPasswordHash })
+
+      return res.status(200).json({ msg: 'Password has been changed successfully.' })
     } catch (err: any) {
       return res.status(500).json({ msg: err.message })
     }

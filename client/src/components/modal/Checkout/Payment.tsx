@@ -8,6 +8,8 @@ import axios from 'axios'
 import { XENDIT_API_KEY } from '../../../config/key'
 import useStore from './../../../store/store'
 import { validPhoneNumber } from '../../../utils/validator'
+import { postDataAPI } from '../../../utils/fetchData'
+import { ICart } from '../../../utils/interface'
 
 interface IProps {
   openPaymentModal: boolean
@@ -18,16 +20,20 @@ interface IProps {
   total: number
   phone: string
   user: string
+  shippingInformation: object
+  courier: string
+  service: string
+  item: ICart[]
 }
 
-const Payment: React.FC<IProps> = ({ openPaymentModal, setOpenPaymentModal, paymentModalRef, subtotal, shipping, total, phone, user }) => {
+const Payment: React.FC<IProps> = ({ openPaymentModal, setOpenPaymentModal, paymentModalRef, subtotal, shipping, total, phone, user, shippingInformation, courier, service, item }) => {
   const [mobilePhoneNumber, setMobilePhoneNumber] = useState('')
 
   const [paymentLoading, setPaymentLoading] = useState(false)
 
   const navigate = useNavigate()
 
-  const { initiate } = useStore()
+  const { userState, initiate, deleteCart } = useStore()
 
   const handlePayment = async() => {
     setPaymentLoading(true)
@@ -54,10 +60,40 @@ const Payment: React.FC<IProps> = ({ openPaymentModal, setOpenPaymentModal, paym
       }
     })
 
+    const remappedItem: object[] = []
+
+    for (let i = 0; i < item.length; i++) {
+      const newObj = {
+        product: item[i].product._id,
+        size: item[i].size,
+        color: item[i].color.colorName,
+        qty: item[i].qty,
+        discount: item[i].discount || 0
+      }
+      
+      remappedItem.push(newObj)
+    }
+
+    await postDataAPI('/checkout', {
+      ...shippingInformation,
+      xenditId: res.data.id,
+      item: remappedItem,
+      courier,
+      service,
+      paymentMethod: 'OVO',
+      subtotal,
+      shippingCost: shipping,
+      total
+    }, userState.data.accessToken)
+
+    for (let i = 0; i < item.length; i++) {
+      await deleteCart(item[i], userState.data.accessToken)
+    }
+
     setPaymentLoading(false)
     setOpenPaymentModal(false)
 
-    initiate('Thank you for your purchase. Please kindly check your payment status at your order page', 'success')
+    initiate('Thank you for your purchase. Please kindly check your  payment status at your order page', 'success')
     navigate('/')
   }
 

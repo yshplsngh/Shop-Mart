@@ -1,4 +1,5 @@
-import { getDataAPI, postDataAPI } from "../utils/fetchData"
+import { getDataAPI, patchDataAPI, postDataAPI } from "../utils/fetchData"
+import { uploadImages } from "../utils/image"
 import { GlobalStoreState, IUserState } from "../utils/interface"
 
 interface ILoginData {
@@ -111,6 +112,29 @@ const userStore = (set: any) => {
           state.alertState.message = err.response.data.msg
           state.alertState.type = 'error'
         }, false, 'logout/error')
+      }
+    },
+    updateProfile: async(data: object, tempAvatar: File[], token: string) => {
+      try {
+        let newAvatarUrl = ''
+        if (tempAvatar.length > 0) {
+          const avatarUrlRes = await uploadImages(tempAvatar, 'profile')
+          newAvatarUrl = avatarUrlRes[0]
+        }
+
+        // @ts-ignore
+        const res = await patchDataAPI('/user/profile', { ...data, avatar: tempAvatar.length > 0 ? newAvatarUrl : data.avatar }, token)
+
+        set((state: GlobalStoreState) => {
+          state.userState.data = { ...state.userState.data, user: res.data.user }
+          state.alertState.message = res.data.msg
+          state.alertState.type = 'success'
+        }, false, 'update_profile/success')
+      } catch (err: any) {
+        set((state: GlobalStoreState) => {
+          state.alertState.message = err.response.data.msg
+          state.alertState.type = 'error'
+        }, false, 'update_profile/error')
       }
     }
   }

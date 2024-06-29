@@ -15,6 +15,9 @@ import Dashboard from './pages/admin/Dashboard'
 import OwnerPick from './pages/admin/OwnerPick'
 import BottomAlert from './components/general/BottomAlert'
 import Checkout from './pages/Checkout'
+import Profile from './pages/Profile'
+import ChangePassword from './pages/ChangePassword'
+import Order from './pages/admin/Order'
 
 const App = () => {
   const { userState, refreshToken, readCart, readWishlist } = useStore()
@@ -41,10 +44,13 @@ const App = () => {
           <Route path='/products' element={<Products />} />
           <Route path='/cart' element={<Cart />} />
           <Route path='/checkout' element={<Checkout />} />
+          <Route path='/profile' element={<Profile />} />
+          <Route path='/change-password' element={<ChangePassword />} />
           <Route path='/admin' element={<Dashboard />} />
           <Route path='/admin/product' element={<Product />} />
           <Route path='/admin/category' element={<Category />} />
           <Route path='/admin/product-discount' element={<ProductDiscount />} />
+          <Route path='/admin/order' element={<Order />} />
           <Route path='/admin/owners-pick' element={<OwnerPick />} />
           <Route path='/products/:slug' element={<Detail />} />
         </Routes>
