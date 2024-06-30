@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom';
-import { FaStar } from 'react-icons/fa6'
+import { FaRegStar, FaStar } from 'react-icons/fa6'
 import { LuMinus, LuPlus } from "react-icons/lu";
 import { APP_NAME } from "../../utils/constant"
 import Footer from "../../components/general/Footer"
@@ -15,6 +15,7 @@ import Overview from '../../components/productDetail/Overview';
 import SizeChart from '../../components/productDetail/SizeChart';
 import useStore from './../../store/store'
 import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
+import Review from '../../components/modal/ProductDetail/Review';
 
 const Detail = () => {
   const [loading, setLoading] = useState(false)
@@ -25,8 +26,11 @@ const Detail = () => {
   const [error, setError] = useState(false)
   const [similarProducts, setSimilarProducts] = useState<IProduct[]>([])
   const [itemOnWishlist, setItemOnWishlist] = useState(false)
+  const [openReviewModal, setOpenReviewModal] = useState(false)
 
   const [tab, setTab] = useState('overview')
+
+  const reviewModalRef = useRef() as React.MutableRefObject<HTMLDivElement>
   
   const { slug } = useParams()
 
@@ -103,6 +107,17 @@ const Detail = () => {
       })
     }
   }
+
+  useEffect(() => {
+    const checkIfClickedOutside = (e: MouseEvent) => {
+      if (openReviewModal && reviewModalRef.current && !reviewModalRef.current.contains(e.target as Node)) {
+        setOpenReviewModal(false)
+      }
+    }
+
+    document.addEventListener('mousedown', checkIfClickedOutside)
+    return () => document.removeEventListener('mousedown', checkIfClickedOutside)
+  }, [openReviewModal])
 
   useEffect(() => {
     const fetchProduct = async(id: string) => {
@@ -273,7 +288,31 @@ const Detail = () => {
                     ? <SizeChart availableSizeParameters={(product.category.availableSizeParameters) as string[]} sizeChart={product.sizeChart}  />  
                     : tab === 'reviews'
                       ? (
-                        <div></div>
+                        <div className='mt-10'>
+                          <div className='mb-10 flex justify-end'>
+                            <button onClick={() => setOpenReviewModal(true)} className='text-white rounded-md bg-black transition hover:bg-gray-800 px-4 py-2'>Post Review</button>
+                          </div>
+                          <div>
+                            <div className='flex md:flex-row flex-col md:items-center md:gap-0 gap-6 justify-between'>
+                              <div className='flex items-center gap-8'>
+                                <div className='w-20 h-20 rounded-full bg-gray-100 border border-gray-200'></div>
+                                <div>
+                                  <h1 className='text-lg font-semibold'>Lorem Ipsum</h1>
+                                  <p className='mt-2 text-gray-500 text-sm'>Really love this product from UE</p>
+                                  <div className='flex items-center gap-1 text-lg text-orange-500 mt-4'>
+                                    <FaStar />
+                                    <FaStar />
+                                    <FaStar />
+                                    <FaStar />
+                                    <FaRegStar />
+                                  </div>  
+                                </div>
+                              </div>
+                              <p className='text-gray-600 text-sm md:text-left text-right'>28 January 2024</p>
+                            </div>
+                            <hr className='my-8' />
+                          </div>
+                        </div>
                       )
                       : ''
                 }
@@ -315,6 +354,12 @@ const Detail = () => {
         )
       }
       <Footer />
+
+      <Review
+        openReviewModal={openReviewModal}
+        setOpenReviewModal={setOpenReviewModal}
+        reviewModalRef={reviewModalRef}
+      />
     </>
   )
 }

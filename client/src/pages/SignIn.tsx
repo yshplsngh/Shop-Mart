@@ -89,15 +89,6 @@ const SignIn = () => {
             </button>
           </form>
           <p className='text-xs font-semibold text-center mt-5 text-gray-400'>Don't have an account? <Link to='/register' className='text-black'>Register</Link></p>
-          <div className='flex items-center w-full gap-3 mt-8'>
-            <div className='flex-1 border-b border-gray-400' />
-            <p className='text-xs text-gray-500'>Or</p>
-            <div className='flex-1 border-b border-gray-400' />
-          </div>
-          <button className='flex items-center justify-center w-full gap-4 rounded-full py-3 text-sm mt-9 bg-gray-900 hover:bg-gray-800 transition text-white'>
-            <img src={`${process.env.PUBLIC_URL}/images/external_icons/google.png`} alt={`${APP_NAME} Sign In With Google`} className='w-4 h-4 pointer-events-none' />
-            Continue with Google
-          </button>
         </div>
         <div className='flex-1 px-20 bg-gray-200 md:block hidden relative'>
           <img src={`${process.env.PUBLIC_URL}/images/photos/login.jpg`} alt={`${APP_NAME} Sign In`} className='object-cover w-full h-full absolute top-0 left-0 pointer-events-none' />

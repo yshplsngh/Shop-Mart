@@ -19,6 +19,7 @@ import Profile from './pages/Profile'
 import ChangePassword from './pages/ChangePassword'
 import Order from './pages/admin/Order'
 import OrderHistory from './pages/OrderHistory'
+import NotFound from './components/general/NotFound'
 
 const App = () => {
   const { userState, refreshToken, readCart, readWishlist } = useStore()
@@ -55,6 +56,7 @@ const App = () => {
           <Route path='/admin/order' element={<Order />} />
           <Route path='/admin/owners-pick' element={<OwnerPick />} />
           <Route path='/products/:slug' element={<Detail />} />
+          <Route path='*' element={<NotFound />} />
         </Routes>
       </Router>
       

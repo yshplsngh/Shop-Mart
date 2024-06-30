@@ -6,6 +6,7 @@ import ownerPick from './ownerPick.route'
 import cart from './cart.route'
 import wishlist from './wishlist.route'
 import checkout from './checkout.route'
+import review from './review.route'
 
 const routes = {
   user,
@@ -15,7 +16,8 @@ const routes = {
   ownerPick,
   cart,
   wishlist,
-  checkout
+  checkout,
+  review
 }
 
 export default routes

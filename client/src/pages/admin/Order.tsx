@@ -211,6 +211,7 @@ const Order = () => {
         setOpenDetailModal={setOpenDetailModal}
         detailModalRef={detailModalRef}
         selectedCustomerOrder={selectedCustomerOrder as ICheckout}
+        adminView={true}
       />
     </>
   )

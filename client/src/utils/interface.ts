@@ -15,6 +15,7 @@ export interface GlobalStoreState {
   cartState: ICartState
   wishlistState: IWishlistState
   customerOrderState: ICheckoutState
+  orderHistoryState: ICheckoutState
 }
 
 export interface IGeneralField {

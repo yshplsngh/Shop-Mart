@@ -10,6 +10,7 @@ import ownerPickStore from './ownerPickStore'
 import cartStore from './cartStore'
 import wishlistStore from './wishlistStore'
 import customerOrderStore from './customerOrderStore'
+import orderHistoryStore from './orderHistoryStore'
 
 let combineStores = (set: any) => ({
   ...alertStore(set),
@@ -21,7 +22,8 @@ let combineStores = (set: any) => ({
   ...ownerPickStore(set),
   ...cartStore(set),
   ...wishlistStore(set),
-  ...customerOrderStore(set)
+  ...customerOrderStore(set),
+  ...orderHistoryStore(set)
 })
 
 export default create(devtools(combineStores))

@@ -8,15 +8,16 @@ interface IProps {
   setOpenDetailModal: React.Dispatch<React.SetStateAction<boolean>>
   detailModalRef: React.MutableRefObject<HTMLDivElement>
   selectedCustomerOrder: ICheckout
+  adminView: boolean
 }
 
-const Detail: React.FC<IProps> = ({ openDetailModal, setOpenDetailModal, detailModalRef, selectedCustomerOrder }) => {
+const Detail: React.FC<IProps> = ({ openDetailModal, setOpenDetailModal, detailModalRef, selectedCustomerOrder, adminView }) => {
   const handleClickClose = () => {
     setOpenDetailModal(false)
   }
 
   return (
-    <div className={`${openDetailModal ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} fixed top-0 left-0 bottom-0 right-0 bg-[rgba(0,0,0,.6)] flex items-center justify-center transition-opacity`}>
+    <div className={`${openDetailModal ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} fixed top-0 left-0 bottom-0 right-0 bg-[rgba(0,0,0,.6)] flex items-center justify-center transition-opacity z-10`}>
       <div ref={detailModalRef} className={`w-1/2 flex flex-col max-h-[90%] bg-white rounded-lg ${openDetailModal ? 'translate-y-0' : '-translate-y-10'} transition-transform`}>
         <div className='flex items-center justify-between px-6 py-3 border-b border-gray-300 bg-gray-900 text-white rounded-t-lg'>
           <p className='font-semibold'>Order Detail</p>
@@ -31,16 +32,19 @@ const Detail: React.FC<IProps> = ({ openDetailModal, setOpenDetailModal, detailM
                 <label className='text-sm'>Order ID</label>
                 <input type='text' value={selectedCustomerOrder._id} readOnly className='text-sm outline-none p-3 border border-gray-300 bg-gray-100 cursor-not-allowed rounded-md w-full mt-4' />
               </div>
-              <div className='flex items-center gap-6 mb-6'>
-                <div className='flex-1'>
-                  <label className='text-sm'>Xendit ID</label>
-                  <input type='text' value={selectedCustomerOrder.xenditId} readOnly className='text-sm outline-none p-3 border border-gray-300 bg-gray-100 cursor-not-allowed rounded-md w-full mt-4' />
+              {
+                adminView &&
+                <div className='flex items-center gap-6 mb-6'>
+                  <div className='flex-1'>
+                    <label className='text-sm'>Xendit ID</label>
+                    <input type='text' value={selectedCustomerOrder.xenditId} readOnly className='text-sm outline-none p-3 border border-gray-300 bg-gray-100 cursor-not-allowed rounded-md w-full mt-4' />
+                  </div>
+                  <div className='flex-1'>
+                    <label className='text-sm'>User ID</label>
+                    <input type='text' value={selectedCustomerOrder.user._id} readOnly className='text-sm outline-none p-3 border border-gray-300 bg-gray-100 cursor-not-allowed rounded-md w-full mt-4' />
+                  </div>
                 </div>
-                <div className='flex-1'>
-                  <label className='text-sm'>User ID</label>
-                  <input type='text' value={selectedCustomerOrder.user._id} readOnly className='text-sm outline-none p-3 border border-gray-300 bg-gray-100 cursor-not-allowed rounded-md w-full mt-4' />
-                </div>
-              </div>
+              }
               <div className='flex items-center gap-6 mb-6'>
                 <div className='flex-1'>
                   <label className='text-sm'>First Name</label>
@@ -66,8 +70,8 @@ const Detail: React.FC<IProps> = ({ openDetailModal, setOpenDetailModal, detailM
               <h1 className='font-semibold mb-6'>Item Detail</h1>
               <div className='flex flex-col gap-8'>
                 {
-                  selectedCustomerOrder.item.map(item => (
-                    <div className='flex items-center justify-between'>
+                  selectedCustomerOrder.item.map((item, idx) => (
+                    <div key={idx} className='flex items-center justify-between'>
                       <div className='flex items-center gap-5'>
                         <div className='w-28 h-28 rounded-md bg-gray-100 border border-gray-300'>
                           <img src={item.images[0]} alt={`${APP_NAME} - ${item.name}`} className='w-full h-full rounded-md object-cover' />

@@ -122,3 +122,10 @@ export interface ICheckout extends IGeneralField {
   paymentStatus: string
   paymentMethod: string
 }
+
+export interface IReview extends IGeneralField {
+  product: ObjectId
+  user: ObjectId
+  star: number
+  content: string
+}
