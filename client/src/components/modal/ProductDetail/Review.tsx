@@ -2,20 +2,32 @@ import { useState } from 'react'
 import { AiOutlineClose } from "react-icons/ai"
 import { FaRegStar, FaStar } from "react-icons/fa6"
 import { FormSubmitted } from '../../../utils/interface'
+import useStore from './../../../store/store'
+import { getDataAPI } from '../../../utils/fetchData'
 
 interface IProps {
   openReviewModal: boolean
   setOpenReviewModal: React.Dispatch<React.SetStateAction<boolean>>
   reviewModalRef: React.MutableRefObject<HTMLDivElement>
+  product: string
+  setReviewEligibility: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const Review: React.FC<IProps> = ({ openReviewModal, setOpenReviewModal, reviewModalRef }) => {
+const Review: React.FC<IProps> = ({ openReviewModal, setOpenReviewModal, reviewModalRef, product, setReviewEligibility }) => {
   const [rating, setRating] = useState(0)
   const [star, setStar] = useState(0)
   const [content, setContent] = useState('')
 
-  const handleSubmit = (e: FormSubmitted) => {
+  const { userState, createReview } = useStore()
+
+  const handleSubmit = async(e: FormSubmitted) => {
     e.preventDefault()
+    await createReview({ product, star, content }, userState.data.user!, userState.data.accessToken!)
+    
+    const res = await getDataAPI(`/review/eligibility/${product}`, userState.data.accessToken)
+    setReviewEligibility(res.data.eligibility)
+
+    setOpenReviewModal(false)
   }
 
   return (

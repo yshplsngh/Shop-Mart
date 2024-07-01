@@ -16,6 +16,8 @@ import SizeChart from '../../components/productDetail/SizeChart';
 import useStore from './../../store/store'
 import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
 import Review from '../../components/modal/ProductDetail/Review';
+import Pagination from '../../components/general/Pagination';
+import { formatDate } from '../../utils/date';
 
 const Detail = () => {
   const [loading, setLoading] = useState(false)
@@ -27,6 +29,9 @@ const Detail = () => {
   const [similarProducts, setSimilarProducts] = useState<IProduct[]>([])
   const [itemOnWishlist, setItemOnWishlist] = useState(false)
   const [openReviewModal, setOpenReviewModal] = useState(false)
+  const [reviewEligibility, setReviewEligibility] = useState(false)
+  const [page, setPage] = useState(1)
+  const limit = 9
 
   const [tab, setTab] = useState('overview')
 
@@ -34,7 +39,7 @@ const Detail = () => {
   
   const { slug } = useParams()
 
-  const { userState, wishlistState, createCart, createWishlist } = useStore()
+  const { userState, wishlistState, reviewState, createCart, createWishlist, readReview } = useStore()
   
   const handleAddToWishlist = () => {
     if (userState.data.accessToken) {
@@ -108,6 +113,27 @@ const Detail = () => {
     }
   }
 
+  const handleChangePage = (type: string) => {
+    if (type === 'previous') {
+      if (page > 1) {
+        setPage(page - 1)
+      } else {
+        setPage(page)
+      }
+    } else if (type === 'next') {
+      if (page === reviewState.totalPage) {
+        setPage(reviewState.totalPage)
+      } else {
+        setPage(page + 1)
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (product._id)
+      readReview(product._id, page, limit)
+  }, [readReview, product._id, page, limit])
+
   useEffect(() => {
     const checkIfClickedOutside = (e: MouseEvent) => {
       if (openReviewModal && reviewModalRef.current && !reviewModalRef.current.contains(e.target as Node)) {
@@ -145,6 +171,17 @@ const Detail = () => {
 
     fetchSimilarProducts()
   }, [slug])
+
+  useEffect(() => {
+    const checkReviewEligibility = async(productId: string, token: string) => {
+      const res = await getDataAPI(`/review/eligibility/${productId}`, token)
+      setReviewEligibility(res.data.eligibility)
+    }
+
+    if (product._id && userState.data.accessToken) {
+      checkReviewEligibility(product._id, userState.data.accessToken)
+    }
+  }, [product, userState.data.accessToken])
 
   useEffect(() => {
     if (wishlistState.data.find(item => item._id === product._id)) {
@@ -289,29 +326,79 @@ const Detail = () => {
                     : tab === 'reviews'
                       ? (
                         <div className='mt-10'>
-                          <div className='mb-10 flex justify-end'>
-                            <button onClick={() => setOpenReviewModal(true)} className='text-white rounded-md bg-black transition hover:bg-gray-800 px-4 py-2'>Post Review</button>
-                          </div>
-                          <div>
-                            <div className='flex md:flex-row flex-col md:items-center md:gap-0 gap-6 justify-between'>
-                              <div className='flex items-center gap-8'>
-                                <div className='w-20 h-20 rounded-full bg-gray-100 border border-gray-200'></div>
-                                <div>
-                                  <h1 className='text-lg font-semibold'>Lorem Ipsum</h1>
-                                  <p className='mt-2 text-gray-500 text-sm'>Really love this product from UE</p>
-                                  <div className='flex items-center gap-1 text-lg text-orange-500 mt-4'>
-                                    <FaStar />
-                                    <FaStar />
-                                    <FaStar />
-                                    <FaStar />
-                                    <FaRegStar />
-                                  </div>  
-                                </div>
-                              </div>
-                              <p className='text-gray-600 text-sm md:text-left text-right'>28 January 2024</p>
+                          {
+                            reviewEligibility &&
+                            <div className='mb-10 flex justify-end'>
+                              <button onClick={() => setOpenReviewModal(true)} className='text-white rounded-md bg-black transition hover:bg-gray-800 px-4 py-2'>Post Review</button>
                             </div>
-                            <hr className='my-8' />
+                          }
+                          <div>
+                            {
+                              reviewState.data.length === 0
+                              ? (
+                                <div className='bg-orange-500 text-white w-full rounded-md text-center py-3 font-semibold'>
+                                  <p>No reviews found</p>
+                                </div>
+                              )
+                              : (
+                                <>
+                                  {
+                                    reviewState.data.map(item => (
+                                      <div key={item._id}>
+                                        <div className='flex md:flex-row flex-col md:items-center md:gap-0 gap-6 justify-between'>
+                                          <div className='flex items-center gap-8'>
+                                            {
+                                              !item.user.avatar
+                                              ? (
+                                                <div className='w-20 h-20 rounded-full bg-gray-800 border border-gray-200 flex items-center justify-center'>
+                                                  <p className='text-white font-bold text-4xl'>{`${item.user.name.split(' ')[0][0]} ${item.user.name.split(' ')[item.user.name.split(' ').length - 1][0]}`}</p>
+                                                </div>
+                                              )
+                                              : (
+                                                <div className='w-20 h-20 rounded-full bg-gray-100 border border-gray-200'>
+                                                  <img src={item.user.avatar} alt={`${APP_NAME} - ${product.name}`} />
+                                                </div>
+                                              )
+                                            }
+                                            <div>
+                                              <h1 className='text-lg font-semibold'>{item.user.name}</h1>
+                                              <p className='mt-2 text-gray-500 text-sm'>{item.content}</p>
+                                              <div className='flex items-center gap-1 text-lg text-orange-500 mt-4'>
+                                                {
+                                                  Array(item.star).fill(null).map((item, idx) => (
+                                                    <FaStar key={idx} className='text-orange-500' />
+                                                  ))
+                                                }
+
+                                                {
+                                                  Array(5 - item.star).fill(null).map((item, idx) => (
+                                                    <FaRegStar key={idx} className='text-orange-500' />
+                                                  ))
+                                                }
+                                              </div>  
+                                            </div>
+                                          </div>
+                                          <p className='text-gray-600 text-sm md:text-left text-right'>{formatDate(item.createdAt)}</p>
+                                        </div>
+                                        <hr className='my-8' />
+                                      </div>
+                                    ))
+                                  }
+                                </>
+                              )
+                            }
                           </div>
+
+                          {
+                            reviewState.totalPage > 1 &&
+                            <div className='mt-12 flex justify-center'>
+                              <Pagination
+                                currentPage={page}
+                                totalPage={reviewState.totalPage}
+                                handleChangePage={handleChangePage}
+                              />
+                            </div>
+                          }
                         </div>
                       )
                       : ''
@@ -359,6 +446,8 @@ const Detail = () => {
         openReviewModal={openReviewModal}
         setOpenReviewModal={setOpenReviewModal}
         reviewModalRef={reviewModalRef}
+        product={product._id as string}
+        setReviewEligibility={setReviewEligibility}
       />
     </>
   )

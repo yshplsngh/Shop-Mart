@@ -16,6 +16,7 @@ export interface GlobalStoreState {
   wishlistState: IWishlistState
   customerOrderState: ICheckoutState
   orderHistoryState: ICheckoutState
+  reviewState: IReviewState
 }
 
 export interface IGeneralField {
@@ -190,6 +191,20 @@ export interface ICheckout extends IGeneralField {
 
 export interface ICheckoutState {
   data: ICheckout[]
+  loading: boolean
+  totalPage: number
+  totalData: number
+}
+
+export interface IReview extends IGeneralField {
+  user: IUser
+  product: string
+  star: number
+  content: string
+}
+
+export interface IReviewState {
+  data: IReview[]
   loading: boolean
   totalPage: number
   totalData: number
