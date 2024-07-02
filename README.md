@@ -3,7 +3,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/yshplsngh/shop-mart">
-    <img src="client/public/image/logo_white.jpg" alt="Logo" width="80" height="80">
+    <img src="client/public/images/logo_white.jpg" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">Urban Elegance</h3>
